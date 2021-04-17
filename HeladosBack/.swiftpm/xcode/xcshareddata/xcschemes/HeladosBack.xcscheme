@@ -94,6 +94,11 @@
             value = "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"
             isEnabled = "YES">
          </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "STRIPE_API_KEY"
+            value = "pk_test_mGRQh1rUa1lbrzZJjwdERlw900trAKxkua"
+            isEnabled = "YES">
+         </EnvironmentVariable>
       </EnvironmentVariables>
    </LaunchAction>
    <ProfileAction
