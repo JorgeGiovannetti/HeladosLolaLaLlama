@@ -91,7 +91,7 @@
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "SENDGRID_API_KEY"
-            value = "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"
+            value = "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"
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>
