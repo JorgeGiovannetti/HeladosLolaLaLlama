@@ -48,6 +48,7 @@ public func configure(_ app: Application) throws {
     app.migrations.add(CreateHelado())
     app.migrations.add(CreateHeladoCategoryPivot())
     app.migrations.add(CreateFotoProducto())
+    app.migrations.add(CreatePrecioProducto())
     app.migrations.add(CreateClient())
     app.migrations.add(CreateClientUser())
     app.migrations.add(CreateTokenClient())
