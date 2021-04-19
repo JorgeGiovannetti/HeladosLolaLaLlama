@@ -33,13 +33,13 @@ struct FotoProductoController: RouteCollection {
         let productQuery = Product.find(fotoProducto.product, on: req.db).unwrap(or: Abort(.notFound))
         
         return productQuery.flatMap{ p in
-            let myNewPhoto = FotoProducto(foto: fotoProducto.url, product: p.requireID())
-            myNewPhoto.save(on: req.db).map{myNewPhoto}
+            let myNewPhoto = FotoProducto(foto: fotoProducto.foto, product: p.id!)
+            return myNewPhoto.save(on: req.db).map{myNewPhoto}
         }
     }
     
 }
 struct FotoProductoCreate: Content{
-    var url: String
+    var foto: String
     var product: UUID
 }

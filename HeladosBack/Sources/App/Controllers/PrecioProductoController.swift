@@ -29,8 +29,18 @@ struct PrecioProductoController: RouteCollection {
     }
     
     func createHandler(_ req: Request) throws -> EventLoopFuture<PrecioProducto> {
-        let precioProducto = try req.content.decode(PrecioProducto.self)
-        return precioProducto.save(on: req.db).map{precioProducto}
+        let precioProducto = try req.content.decode(PrecioProductoCreate.self)
+        let productQuery = Product.find(precioProducto.product, on: req.db).unwrap(or: Abort(.notFound))
+        
+        return productQuery.flatMap{ p in
+            let myNewPrice = PrecioProducto(price: precioProducto.price, product: p.id!)
+            return myNewPrice.save(on: req.db).map{myNewPrice}
+        }
     }
     
+}
+
+struct PrecioProductoCreate: Content{
+    var price: Float
+    var product: UUID
 }
