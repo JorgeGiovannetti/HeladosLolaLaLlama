@@ -14,7 +14,7 @@ final class Helado: Model, Content {
     @ID
     var id: UUID?
 
-    @Field(key: "sabor")
+    @Field(key: "flavor")
     var flavor: String
     
     @Parent(key: "id")
