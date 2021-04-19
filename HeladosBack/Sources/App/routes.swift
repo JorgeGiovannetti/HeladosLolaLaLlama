@@ -25,6 +25,9 @@ func routes(_ app: Application) throws {
     let fotoProductoController = FotoProductoController()
     try app.register(collection: fotoProductoController)
     
+    let precioProductoController = PrecioProductoController()
+    try app.register(collection: precioProductoController)
+    
     let clientController = ClientController()
     try app.register(collection: clientController)
     
