@@ -32,6 +32,7 @@ struct HeladoController: RouteCollection {
     func getAllHandler(_ req: Request) throws ->  EventLoopFuture<[Helado]> {
         return Helado.query(on: req.db).with(\.$product, {p in
             p.with(\.$fotos)
+            p.with(\.$precios)
         }).with(\.$categories).all()
     }
     
@@ -41,14 +42,16 @@ struct HeladoController: RouteCollection {
     }
 
     func getAllSortedFlavorHandler(_ req: Request) throws ->  EventLoopFuture<[Helado]> {
-        return Helado.query(on: req.db).with(\.$product).with(\.$product, {p in
+        return Helado.query(on: req.db).with(\.$product,{p in
             p.with(\.$fotos)
+            p.with(\.$precios)
         }).sort(\.$flavor).all()
     }
+
     
     func createHandler(_ req: Request) throws -> EventLoopFuture<Helado> {
         let data = try req.content.decode(HeladoCreateData.self)
-        let product = Product(name: data.name, price: data.price, description: data.description)
+        let product = Product(name: data.name, description: data.description)
         
         let futureResponse : EventLoopFuture<Helado> = product.save(on: req.db).flatMap { p -> EventLoopFuture<Helado> in
             let helado = Helado(id: product.id, flavor: data.flavor)
@@ -63,6 +66,7 @@ struct HeladoController: RouteCollection {
         let id = UUID.init(uuidString: req.parameters.get("heladoID") ?? "") ?? UUID()
         return Helado.query(on: req.db).filter(\.$id == id).with(\.$product, {p in
             p.with(\.$fotos)
+            p.with(\.$precios)
         }).with(\.$categories).first().unwrap(or: Abort(.notFound))
     }
     
@@ -74,6 +78,7 @@ struct HeladoController: RouteCollection {
           }
         return Helado.query(on: req.db).with(\.$product, {p in
             p.with(\.$fotos)
+            p.with(\.$precios)
         }).group(.or) { or in
             or.filter(\.$flavor == searchTerm)
           }.all()

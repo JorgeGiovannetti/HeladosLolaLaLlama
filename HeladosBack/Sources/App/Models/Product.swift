@@ -17,9 +17,6 @@ final class Product: Model {
     @Field(key: "name")
     var name: String
     
-    @Field(key: "price")
-    var price: Float
-    
     @OptionalField(key: "description")
     var description: String?
     
@@ -33,16 +30,18 @@ final class Product: Model {
     var fotos: [FotoProducto]
     
     @Children(for: \.$product)
+    var precios: [PrecioProducto]
+    
+    @Children(for: \.$product)
     var orderDetails: [OrderDetail]
     
     init() {
         
     }
     
-    init(id: UUID? = nil, name: String, price: Float, description: String) {
+    init(id: UUID? = nil, name: String, description: String) {
         self.id = id
         self.name = name
-        self.price = price
         self.description = description
         self.available = true
     }

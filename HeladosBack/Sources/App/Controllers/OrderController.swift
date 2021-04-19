@@ -125,7 +125,7 @@ struct OrderController: RouteCollection {
                             var stringEmail = ""
                             for detail in orderDetails{
                                 detail.$product.get(on: req.db).map { (product) -> (Void) in
-                                    stringEmail += "<tr><td>\(product.$name)</td><td>\(detail.quantity)</td><td>\(product.$price)</td></tr>"
+                                   // stringEmail += "<tr><td>\(product.$name)</td><td>\(detail.quantity)</td><td>\(product.$price)</td></tr>"
                                 }
                             }
                             stringEmail += "</table></td></tr></table><h3>ID de order: \(String(describing: order.id?.uuidString))</h3><br><h2>Total: \(order.total)</h2>"

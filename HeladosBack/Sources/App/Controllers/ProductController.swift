@@ -20,19 +20,19 @@ struct ProductController: RouteCollection {
     }
     
     func getAllHandler(_ req: Request) throws -> EventLoopFuture<[Product]> {
-        Product.query(on: req.db).with(\.$helado).with(\.$fotos).all()
+        Product.query(on: req.db).with(\.$helado).with(\.$fotos).with(\.$precios).all()
     }
-    
+
     func getHandler(_ req: Request) throws -> EventLoopFuture<Product> {
         return Product.find(req.parameters.get("productID"), on: req.db).unwrap(or: Abort(.notFound))
     }
     
     func getAllAvailableHandler(_ req: Request) throws -> EventLoopFuture<[Product]> {
-        Product.query(on: req.db).with(\.$helado).with(\.$fotos).filter(\.$available == true).all()
+        Product.query(on: req.db).with(\.$helado).with(\.$fotos).with(\.$precios).filter(\.$available == true).all()
     }
     
     func getAllAvailableHeladosHandler(_ req: Request) throws -> EventLoopFuture<[Product]> {
-        Product.query(on: req.db).with(\.$helado).with(\.$fotos).filter(\.$available == true).all()
+        Product.query(on: req.db).with(\.$helado).with(\.$fotos).with(\.$precios).filter(\.$available == true).all()
     }
     
     
