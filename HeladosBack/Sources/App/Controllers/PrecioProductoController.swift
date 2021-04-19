@@ -33,7 +33,8 @@ struct PrecioProductoController: RouteCollection {
         let productQuery = Product.find(precioProducto.product, on: req.db).unwrap(or: Abort(.notFound))
         
         return productQuery.flatMap{ p in
-            let myNewPrice = PrecioProducto(price: precioProducto.price, product: p.id!)
+            
+            let myNewPrice = PrecioProducto(size: precioProducto.size, price: precioProducto.price, product: p.id!)
             return myNewPrice.save(on: req.db).map{myNewPrice}
         }
     }
@@ -42,5 +43,6 @@ struct PrecioProductoController: RouteCollection {
 
 struct PrecioProductoCreate: Content{
     var price: Float
+    var size: String?
     var product: UUID
 }
