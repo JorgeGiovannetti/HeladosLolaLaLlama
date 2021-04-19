@@ -158,7 +158,6 @@ struct HeladoCreateData:  Content {
     var flavor: String
     var name: String
     var description: String
-    var price: Float
 }
 
 struct HeladoUpdateData:  Content {
