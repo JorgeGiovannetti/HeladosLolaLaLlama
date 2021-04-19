@@ -29,8 +29,17 @@ struct FotoProductoController: RouteCollection {
     }
     
     func createHandler(_ req: Request) throws -> EventLoopFuture<FotoProducto> {
-        let fotoProducto = try req.content.decode(FotoProducto.self)
-        return fotoProducto.save(on: req.db).map{fotoProducto}
+        let fotoProducto = try req.content.decode(FotoProductoCreate.self)
+        let productQuery = Product.find(fotoProducto.product, on: req.db).unwrap(or: Abort(.notFound))
+        
+        return productQuery.flatMap{ p in
+            let myNewPhoto = FotoProducto(foto: fotoProducto.url, product: p.requireID())
+            myNewPhoto.save(on: req.db).map{myNewPhoto}
+        }
     }
     
+}
+struct FotoProductoCreate: Content{
+    var url: String
+    var product: UUID
 }
