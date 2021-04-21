@@ -2,15 +2,9 @@ import React from 'react'
 import {
 	Box,
 	Flex,
-	Avatar,
 	HStack,
 	Link,
 	IconButton,
-	Button,
-	Menu,
-	MenuButton,
-	MenuList,
-	MenuItem,
 	useDisclosure,
 	useColorModeValue,
 	Stack,
@@ -20,8 +14,6 @@ import {
 } from '@chakra-ui/react'
 import { HiShoppingCart } from 'react-icons/hi'
 import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons'
-
-// const Links = ['Helados', 'Helados Lola La Llama', 'Carrito']
 
 const NavLink = ({ link, children }) => (
 	<Link
