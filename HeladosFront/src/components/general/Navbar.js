@@ -9,7 +9,6 @@ import {
 	useColorModeValue,
 	Stack,
 	Icon,
-	Spacer,
 	Text,
 } from '@chakra-ui/react'
 import { HiShoppingCart } from 'react-icons/hi'
@@ -31,7 +30,7 @@ const NavLink = ({ link, children }) => (
 	</Link>
 )
 
-const Navbar = () => {
+const Navbar = ({ home = false }) => {
 	const { isOpen, onOpen, onClose } = useDisclosure()
 
 	return (
@@ -67,18 +66,21 @@ const Navbar = () => {
 							<NavLink key={'helados'} link={'Products'}>
 								Helados
 							</NavLink>
-							<Link
-								px={2}
-								py={1}
-								rounded={'md'}
-								href={'Landing'}
-								color={'gray.800'}
-								_hover={{
-									textDecoration: 'none',
-								}}
-							>
-								<Text fontSize={'3xl'}>Helados Lola La Llama</Text>
-							</Link>
+							{home ? null : (
+								<Link
+									px={2}
+									py={1}
+									rounded={'md'}
+									href={'Landing'}
+									color={'gray.800'}
+									_hover={{
+										textDecoration: 'none',
+									}}
+								>
+									<Text fontSize={'3xl'}>Helados Lola La Llama</Text>
+								</Link>
+							)}
+
 							<NavLink key={'carrito'} link={'Cart'}>
 								<Icon w={6} h={6} color='gray.800' as={HiShoppingCart}></Icon>
 							</NavLink>
