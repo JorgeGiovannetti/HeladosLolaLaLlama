@@ -1,7 +1,7 @@
 import React from 'react'
-import { Box } from '@chakra-ui/react'
+import { Spinner } from '@chakra-ui/react'
 import Navbar from '../../components/general/Navbar'
-import { SimpleGrid } from '@chakra-ui/layout'
+import { Center, SimpleGrid } from '@chakra-ui/layout'
 import useProducts from './hooks/useProducts'
 import Product from '../../components/general/Product'
 
@@ -9,12 +9,14 @@ const Products = () => {
 	const { products, isLoading, error } = useProducts()
 
 	if (error) {
-		console.log('Error fetching data')
+		console.log('Error fetching products')
 		console.log(error)
 	}
 
 	const componentsChild = isLoading ? (
-		<Box></Box>
+		<Center>
+			<Spinner size='xl' color={'gray'} />
+		</Center>
 	) : (
 		products.map(({ categories, flavor, id, product }) => (
 			<Product
