@@ -34,7 +34,7 @@ const Navbar = ({ home = false }) => {
 	const { isOpen, onOpen, onClose } = useDisclosure()
 
 	return (
-		<Box position={'fixed'} top={'0'} left={'0'}>
+		<Box position={'fixed'} top={'0'} left={'0'} bg={'gray.50'}>
 			<Box
 				// bg={useColorModeValue('yellow.100', 'yellow.200')}
 				px={4}
