@@ -16,7 +16,7 @@ const Landing = () => {
 			<VStack justify={'center'}>
 				<Text
 					mx={48}
-					bgGradient='linear(to-l,pink.200,green.100,yellow.200)'
+					bgGradient='linear(to-l,pink.200,yellow.200,green.200)'
 					bgClip='text'
 					fontSize='8xl'
 					fontWeight='extrabold'

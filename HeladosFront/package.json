@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@chakra-ui/icons": "^1.0.10",
+    "@chakra-ui/layout": "^1.4.3",
     "@chakra-ui/react": "^1.5.2",
     "@emotion/react": "^11.1.5",
     "@emotion/styled": "^11.3.0",
@@ -18,6 +19,7 @@
     "react-icons": "^4.2.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
+    "swr": "^0.5.5",
     "web-vitals": "^1.1.1"
   },
   "scripts": {
