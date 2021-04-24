@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import {
 	Box,
@@ -38,6 +38,8 @@ const getCategoryColor = (name) => {
 }
 
 const ProductDetail = () => {
+	const [numberOfPints, setNumberOfPints] = useState(1)
+	const [size, setSize] = useState('sm')
 	const { id } = useParams()
 	const { product, isLoading, error } = useProduct(id)
 
@@ -63,6 +65,8 @@ const ProductDetail = () => {
 
 	const addToCart = () => {
 		console.log('add to cart')
+		console.log('num of pints ' + numberOfPints)
+		console.log('size ' + size)
 	}
 
 	return (
@@ -134,27 +138,33 @@ const ProductDetail = () => {
 									align='center'
 									spacing={4}
 								>
-									<RadioGroup defaultValue='1'>
+									<RadioGroup defaultValue='sm' onChange={setSize}>
 										<Stack spacing={5} direction='row'>
 											{product.product.precios[0] ? (
-												<Radio colorScheme='green' value='1'>
+												<Radio colorScheme='green' value='sm'>
 													Chico
 												</Radio>
 											) : null}
 											{product.product.precios[1] ? (
-												<Radio colorScheme='yellow' value='2'>
+												<Radio colorScheme='yellow' value='md'>
 													Med
 												</Radio>
 											) : null}
 											{product.product.precios[2] ? (
-												<Radio colorScheme='pink' value='3'>
+												<Radio colorScheme='pink' value='lg'>
 													Grande
 												</Radio>
 											) : null}
 										</Stack>
 									</RadioGroup>
 									<Box w='32'>
-										<NumberInput defaultValue={1} min={1} max={25} size='md'>
+										<NumberInput
+											defaultValue={1}
+											min={1}
+											max={25}
+											size='md'
+											onChange={setNumberOfPints}
+										>
 											<NumberInputField />
 											<NumberInputStepper>
 												<NumberIncrementStepper />
