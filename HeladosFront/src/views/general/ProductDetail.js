@@ -9,10 +9,20 @@ import {
 	Badge,
 	Text,
 	VStack,
+	RadioGroup,
+	Radio,
+	Icon,
+	Link,
+	NumberInput,
+	NumberInputField,
+	NumberInputStepper,
+	NumberIncrementStepper,
+	NumberDecrementStepper,
 } from '@chakra-ui/react'
 import { Stack } from '@chakra-ui/layout'
 import Navbar from '../../components/general/Navbar'
 import useProduct from './hooks/useProduct'
+import { HiShoppingCart } from 'react-icons/hi'
 
 const getCategoryColor = (name) => {
 	switch (name) {
@@ -51,6 +61,10 @@ const ProductDetail = () => {
 				</Badge>
 		  ))
 
+	const addToCart = () => {
+		console.log('add to cart')
+	}
+
 	return (
 		<>
 			<Navbar />
@@ -66,11 +80,12 @@ const ProductDetail = () => {
 							alt={'Helado de ' + product.flavor}
 							w='md'
 							rounded='md'
+							ml={4}
 						/>
 						<VStack>
 							<Text fontSize='4xl'>{product.product.name}</Text>
 
-							<HStack>
+							<HStack pb={8}>
 								{categoriesBadges}
 								<Box
 									color='gray.500'
@@ -85,6 +100,7 @@ const ProductDetail = () => {
 							</HStack>
 							<Text fontSize='xl'>{product.product.description}</Text>
 
+							{/* Prices */}
 							<Stack direction={{ sm: 'column', lg: 'row' }}>
 								{product.product.precios[0] ? (
 									<Box>
@@ -111,6 +127,73 @@ const ProductDetail = () => {
 									</Box>
 								) : null}
 							</Stack>
+							{/* Add to cart */}
+							<Box pt={16}>
+								<Stack
+									direction={{ sm: 'column', lg: 'row' }}
+									align='center'
+									spacing={4}
+								>
+									<RadioGroup defaultValue='1'>
+										<Stack spacing={5} direction='row'>
+											{product.product.precios[0] ? (
+												<Radio colorScheme='green' value='1'>
+													Chico
+												</Radio>
+											) : null}
+											{product.product.precios[1] ? (
+												<Radio colorScheme='yellow' value='2'>
+													Med
+												</Radio>
+											) : null}
+											{product.product.precios[2] ? (
+												<Radio colorScheme='pink' value='3'>
+													Grande
+												</Radio>
+											) : null}
+										</Stack>
+									</RadioGroup>
+									<Box w='32'>
+										<NumberInput defaultValue={1} min={1} max={25} size='md'>
+											<NumberInputField />
+											<NumberInputStepper>
+												<NumberIncrementStepper />
+												<NumberDecrementStepper />
+											</NumberInputStepper>
+										</NumberInput>
+									</Box>
+								</Stack>
+								<Link
+									w='100%'
+									m={8}
+									rounded={'md'}
+									_hover={{
+										textDecoration: 'none',
+									}}
+									color={'white'}
+									colorScheme={'black'}
+									onClick={() => addToCart()}
+								>
+									<Center
+										bg={'gray.800'}
+										borderRadius='md'
+										w={'100%'}
+										padding={'3'}
+										justifyContent={'center'}
+									>
+										<Text fontSize={'lg'} fontWeight={'bold'}>
+											<Icon
+												w={5}
+												h={5}
+												color='white'
+												as={HiShoppingCart}
+												mr={4}
+											/>
+											AGREGAR A CARRITO
+										</Text>
+									</Center>
+								</Link>
+							</Box>
 						</VStack>
 					</Stack>
 				)}
