@@ -18,6 +18,7 @@ import {
 	NumberInputStepper,
 	NumberIncrementStepper,
 	NumberDecrementStepper,
+	useToast,
 } from '@chakra-ui/react'
 import { Stack } from '@chakra-ui/layout'
 import Navbar from '../../components/general/Navbar'
@@ -38,10 +39,12 @@ const getCategoryColor = (name) => {
 }
 
 const ProductDetail = () => {
-	const [numberOfPints, setNumberOfPints] = useState(1)
-	const [size, setSize] = useState('sm')
 	const { id } = useParams()
 	const { product, isLoading, error } = useProduct(id)
+	const toast = useToast()
+
+	const [numberOfPints, setNumberOfPints] = useState(1)
+	const [size, setSize] = useState('sm')
 
 	if (error) {
 		console.log('Error fetching product')
@@ -67,6 +70,13 @@ const ProductDetail = () => {
 		console.log('add to cart')
 		console.log('num of pints ' + numberOfPints)
 		console.log('size ' + size)
+		toast({
+			title: '¡Helado agregado!',
+			description: 'El helado ha sido agregado a tu carrito exitosamente.',
+			status: 'success',
+			duration: 9000,
+			isClosable: true,
+		})
 	}
 
 	return (
