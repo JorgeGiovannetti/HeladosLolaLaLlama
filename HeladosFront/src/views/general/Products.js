@@ -7,40 +7,30 @@ import Product from '../../components/general/Product'
 
 const Products = () => {
 	const { products, isLoading, error } = useProducts()
+
 	if (error) {
-		console.log('recevied error')
-	}
-	if (isLoading) {
-		console.log('is loading')
-	}
-	if (products) {
-		console.log('recevied products')
-		console.log(products)
+		console.log('Error fetching data')
+		console.log(error)
 	}
 
-	// const product = {
-	// 	categories: {
-	// 		name,
-	// 		id,
-	// 	},
-	// 	flavor,
-	// 	id,
-	// 	name,
-	// 	description,
-	// 	imageURL,
-	// }
-
-	const componentsChild = !products ? (
+	const componentsChild = isLoading ? (
 		<Box></Box>
 	) : (
-		products.map((product) => <Product />)
+		products.map(({ categories, flavor, id, product }) => (
+			<Product
+				categories={categories}
+				flavor={flavor}
+				product={product}
+				id={id}
+				key={id}
+			/>
+		))
 	)
 
 	return (
 		<>
 			<Navbar />
-
-			<SimpleGrid minChildWidth='360px' gap={12} w='100%' p='8' mt={12}>
+			<SimpleGrid minChildWidth='360px' gap={12} w='100%' p='12' mt={12}>
 				{componentsChild}
 			</SimpleGrid>
 		</>

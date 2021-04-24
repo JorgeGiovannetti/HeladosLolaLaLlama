@@ -1,62 +1,97 @@
-import { Box, Image, Badge } from '@chakra-ui/react'
+import { Box, Image, Badge, Text, Icon, Link } from '@chakra-ui/react'
+import { HiCurrencyDollar } from 'react-icons/hi'
 
-const Product = () => {
-	const property = {
-		imageUrl: 'https://bit.ly/2Z4KKcF',
-		imageAlt: 'Rear view of modern home with pool',
-		beds: 3,
-		baths: 2,
-		title: 'Modern home in city center in the heart of historic Los Angeles',
-		formattedPrice: '$1,900.00',
-		reviewCount: 34,
-		rating: 4,
+const getCategoryColor = (name) => {
+	switch (name) {
+		case 'Tradicionales':
+			return 'red'
+		case 'PREMIUM':
+			return 'yellow'
+		case `HERSHEY's`:
+			return 'blue'
+		default:
+			return 'orange'
 	}
+}
+
+const Product = ({ categories, flavor, id, product }) => {
+	const imageURL = product.fotos[0].foto
+
+	const categoriesBadges = categories.map(({ id, name }) => (
+		<Badge
+			borderRadius='full'
+			px='2'
+			colorScheme={getCategoryColor(name)}
+			key={id}
+		>
+			{name}
+		</Badge>
+	))
 
 	return (
-		<Box borderWidth='1px' borderRadius='md' overflow='hidden'>
-			<Image src={property.imageUrl} alt={property.imageAlt} />
+		<Link
+			href={`products/${id}`}
+			_hover={{
+				textDecoration: 'none',
+			}}
+		>
+			<Box borderWidth='1px' borderRadius='md' overflow='hidden'>
+				<Image src={imageURL} alt={'Helado de ' + flavor} />
 
-			<Box p='6'>
-				<Box d='flex' alignItems='baseline'>
-					<Badge borderRadius='full' px='2' colorScheme='teal'>
-						New
-					</Badge>
+				<Box p='6'>
+					<Box d='flex' alignItems='baseline'>
+						{categoriesBadges}
+						<Box
+							color='gray.500'
+							fontWeight='semibold'
+							letterSpacing='wide'
+							fontSize='xs'
+							textTransform='uppercase'
+							ml='2'
+						>
+							{flavor}
+						</Box>
+					</Box>
+
 					<Box
-						color='gray.500'
+						mt='1'
 						fontWeight='semibold'
-						letterSpacing='wide'
-						fontSize='xs'
-						textTransform='uppercase'
-						ml='2'
+						as='h1'
+						lineHeight='tight'
+						isTruncated
 					>
-						{property.beds} beds &bull; {property.baths} baths
+						<Text fontSize={'2xl'}>{product.name}</Text>
 					</Box>
-				</Box>
 
-				<Box
-					mt='1'
-					fontWeight='semibold'
-					as='h4'
-					lineHeight='tight'
-					isTruncated
-				>
-					{property.title}
-				</Box>
+					<Box>{product.description}</Box>
 
-				<Box>
-					{property.formattedPrice}
-					<Box as='span' color='gray.600' fontSize='sm'>
-						/ wk
-					</Box>
-				</Box>
-
-				<Box d='flex' mt='2' alignItems='left'>
-					<Box as='span' color='gray.600' fontSize='sm'>
-						{property.reviewCount} reviews
+					<Box d='flex' mt='2' alignItems='left'>
+						<Box as='span' color='gray.600' fontSize='sm'>
+							{product.precios[0] ? (
+								<>
+									<Icon w={5} h={5} color='green.400' as={HiCurrencyDollar} />
+									{product.precios[0].price}
+									{'  '}
+								</>
+							) : null}
+							{product.precios[1] ? (
+								<>
+									<Icon w={5} h={5} color='yellow.400' as={HiCurrencyDollar} />
+									{product.precios[1].price}
+									{'  '}
+								</>
+							) : null}
+							{product.precios[2] ? (
+								<>
+									<Icon w={5} h={5} color='pink.400' as={HiCurrencyDollar} />
+									{product.precios[2].price}
+								</>
+							) : null}
+						</Box>
 					</Box>
 				</Box>
 			</Box>
-		</Box>
+		</Link>
 	)
 }
 
