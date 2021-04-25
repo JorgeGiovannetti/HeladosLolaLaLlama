@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useSetRecoilState } from 'recoil'
 import { useParams } from 'react-router-dom'
 import {
 	Box,
@@ -24,6 +25,7 @@ import { Stack } from '@chakra-ui/layout'
 import Navbar from '../../components/general/Navbar'
 import useProduct from './hooks/useProduct'
 import { HiShoppingCart } from 'react-icons/hi'
+import cartState from './recoil/cart'
 
 const getCategoryColor = (name) => {
 	switch (name) {
@@ -42,6 +44,7 @@ const ProductDetail = () => {
 	const { id } = useParams()
 	const { product, isLoading, error } = useProduct(id)
 	const toast = useToast()
+	const setCart = useSetRecoilState(cartState)
 
 	const [numberOfPints, setNumberOfPints] = useState(1)
 	const [size, setSize] = useState('sm')
@@ -50,8 +53,6 @@ const ProductDetail = () => {
 		console.log('Error fetching product')
 		console.log(error)
 	}
-	console.log('product info')
-	console.log(product)
 
 	const categoriesBadges = isLoading
 		? null
@@ -67,9 +68,6 @@ const ProductDetail = () => {
 		  ))
 
 	const addToCart = () => {
-		console.log('add to cart')
-		console.log('num of pints ' + numberOfPints)
-		console.log('size ' + size)
 		toast({
 			title: '¡Helado agregado!',
 			description: 'El helado ha sido agregado a tu carrito exitosamente.',
@@ -77,6 +75,8 @@ const ProductDetail = () => {
 			duration: 9000,
 			isClosable: true,
 		})
+
+		setCart((oldCart) => [...oldCart, { size, numberOfPints, id }])
 	}
 
 	return (
