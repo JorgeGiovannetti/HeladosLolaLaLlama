@@ -46,7 +46,7 @@ const ProductDetail = () => {
 	const toast = useToast()
 	const setCart = useSetRecoilState(cartState)
 
-	const [numberOfPints, setNumberOfPints] = useState(1)
+	const [numberOfPints, setNumberOfPints] = useState('1')
 	const [size, setSize] = useState('sm')
 
 	if (error) {
@@ -76,7 +76,16 @@ const ProductDetail = () => {
 			isClosable: true,
 		})
 
-		setCart((oldCart) => [...oldCart, { size, numberOfPints, id }])
+		let price = 0
+		if (size === 'sm') {
+			price = product.product.precios[0].price
+		} else if (size === 'md') {
+			price = product.product.precios[1].price
+		} else {
+			price = product.product.precios[2].price
+		}
+
+		setCart((oldCart) => [...oldCart, { size, numberOfPints, id, price }])
 	}
 
 	return (
