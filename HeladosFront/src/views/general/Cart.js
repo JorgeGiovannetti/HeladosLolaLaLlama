@@ -1,5 +1,5 @@
 import React from 'react'
-import { useSetRecoilState } from 'recoil'
+import { useSetRecoilState, useRecoilState } from 'recoil'
 import {
 	Box,
 	Text,
@@ -19,15 +19,11 @@ import {
 	NumberDecrementStepper,
 } from '@chakra-ui/react'
 import Navbar from '../../components/general/Navbar'
-import { useRecoilState } from 'recoil'
 import cartState from './recoil/cart'
 import { HiOutlineX } from 'react-icons/hi'
 
 const Cart = () => {
 	const cart = useRecoilState(cartState)
-	console.log('reading cart')
-	console.log(cart)
-	// localStorage.removeItem('cart')
 
 	const setCart = useSetRecoilState(cartState)
 	let total = 0
