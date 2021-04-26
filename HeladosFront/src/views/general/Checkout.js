@@ -50,8 +50,8 @@ const Checkout = () => {
 			)
 			total += numberOfPints * price
 			return (
-				<>
-					<Center key={id}>
+				<Box key={id} w='100%'>
+					<Center>
 						<Flex
 							justify='space-between'
 							key={id}
@@ -77,7 +77,7 @@ const Checkout = () => {
 						</Flex>
 					</Center>
 					<Divider />
-				</>
+				</Box>
 			)
 		}
 	)

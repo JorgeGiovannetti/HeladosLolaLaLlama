@@ -7,8 +7,12 @@ const localStorageEffect = (key) => ({ setSelf, onSet }) => {
 	}
 
 	onSet((newValue) => {
-		// Update local storage with products
-		localStorage.setItem(key, JSON.stringify(newValue))
+		if (newValue.length === 0) {
+			localStorage.removeItem(key)
+		} else {
+			// Update local storage with products
+			localStorage.setItem(key, JSON.stringify(newValue))
+		}
 	})
 }
 

@@ -59,8 +59,8 @@ const Cart = () => {
 				</Badge>
 			)
 			return (
-				<>
-					<Flex justify='space-around' key={id} w='100%' align='center' m={4}>
+				<Box key={id} w='100%'>
+					<Flex justify='space-around' w='100%' align='center' m={4}>
 						<Link
 							href={`products/${id}`}
 							_hover={{
@@ -108,7 +108,7 @@ const Cart = () => {
 						</Stack>
 					</Flex>
 					<Divider />
-				</>
+				</Box>
 			)
 		}
 	)
@@ -208,7 +208,7 @@ const Cart = () => {
 									justifyContent={'center'}
 								>
 									<Text fontSize={'lg'} fontWeight={'bold'}>
-										PAGAR
+										CHECKOUT
 									</Text>
 								</Center>
 							</Link>
