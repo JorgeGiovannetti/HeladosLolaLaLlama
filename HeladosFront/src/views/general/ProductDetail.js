@@ -45,6 +45,8 @@ const ProductDetail = () => {
 	const { product, isLoading, error } = useProduct(id)
 	const toast = useToast()
 	const setCart = useSetRecoilState(cartState)
+	const imageURL = !isLoading ? product.product.fotos[0].foto : ''
+	const name = !isLoading ? product.product.name : ''
 
 	const [numberOfPints, setNumberOfPints] = useState('1')
 	const [size, setSize] = useState('sm')
@@ -85,7 +87,10 @@ const ProductDetail = () => {
 			price = product.product.precios[2].price
 		}
 
-		setCart((oldCart) => [...oldCart, { size, numberOfPints, id, price }])
+		setCart((oldCart) => [
+			...oldCart,
+			{ name, imageURL, size, numberOfPints, id, price },
+		])
 	}
 
 	return (
@@ -99,14 +104,14 @@ const ProductDetail = () => {
 				) : (
 					<Stack direction={{ sm: 'column', lg: 'row' }} spacing={16}>
 						<Image
-							src={product.product.fotos[0].foto}
+							src={imageURL}
 							alt={'Helado de ' + product.flavor}
 							w='md'
 							rounded='md'
 							ml={4}
 						/>
 						<VStack>
-							<Text fontSize='4xl'>{product.product.name}</Text>
+							<Text fontSize='4xl'>{name}</Text>
 
 							<HStack pb={8}>
 								{categoriesBadges}
