@@ -1,4 +1,5 @@
 import React from 'react'
+import { useSetRecoilState } from 'recoil'
 import {
 	Box,
 	Text,
@@ -10,6 +11,7 @@ import {
 	Stack,
 	Link,
 	Badge,
+	Heading,
 	NumberInput,
 	NumberInputField,
 	NumberInputStepper,
@@ -27,8 +29,26 @@ const Cart = () => {
 	console.log(cart)
 	// localStorage.removeItem('cart')
 
+	const setCart = useSetRecoilState(cartState)
+	let total = 0
+
 	const products = cart[0].map(
 		({ name, imageURL, size, numberOfPints, id, price }) => {
+			const setNewNumberOfPints = (newNumOfPints) => {
+				setCart((oldCart) => [
+					...oldCart.filter((product) => product.id !== id),
+					{ name, imageURL, size, numberOfPints: newNumOfPints, id, price },
+				])
+			}
+
+			total += numberOfPints * price
+
+			const removeProduct = () => {
+				setCart((oldCart) => [
+					...oldCart.filter((product) => product.id !== id),
+				])
+			}
+
 			const sizeBadge = (
 				<Badge
 					borderRadius='full'
@@ -57,7 +77,7 @@ const Cart = () => {
 								align='center'
 							>
 								<Image src={imageURL} alt={name} rounded='md' ml={4} w={24} />
-								<Text fontSize='md'>{name}</Text>
+								<Text fontSize='lg'>{name}</Text>
 							</Stack>
 						</Link>
 						{sizeBadge}
@@ -67,7 +87,7 @@ const Cart = () => {
 								min={1}
 								max={25}
 								size='md'
-								// onChange={setNumberOfPints}
+								onChange={setNewNumberOfPints}
 							>
 								<NumberInputField />
 								<NumberInputStepper>
@@ -87,6 +107,7 @@ const Cart = () => {
 								aria-label='Delete product'
 								icon={<HiOutlineX />}
 								variant='unstyled'
+								onClick={removeProduct}
 							/>
 						</Stack>
 					</Flex>
@@ -96,58 +117,108 @@ const Cart = () => {
 		}
 	)
 
-	console.log(products)
-
 	return (
 		<>
 			<Navbar />
 			<Box w='100%' p={8} justifyContent='center'>
-				<Text fontSize={'3xl'} m={8}>
-					Carrito
-				</Text>
-				<Center>
-					<Flex justify='space-between' w='75%'>
-						<Text
-							color='gray.500'
-							fontWeight='semibold'
-							letterSpacing='wide'
-							textTransform='uppercase'
-							fontSize='sm'
-						>
-							Producto
+				{cart[0].length === 0 ? (
+					<Center>
+						<Heading as='h3' size='lg'>
+							Tu carrito está vacio...
+						</Heading>
+					</Center>
+				) : (
+					<>
+						<Text fontSize={'3xl'} m={8}>
+							Carrito
 						</Text>
-						<Text
-							color='gray.500'
-							fontWeight='semibold'
-							letterSpacing='wide'
-							textTransform='uppercase'
-							fontSize='sm'
+						<Center>
+							<Flex justify='space-between' w='75%'>
+								<Text
+									color='gray.500'
+									fontWeight='semibold'
+									letterSpacing='wide'
+									textTransform='uppercase'
+									fontSize='sm'
+								>
+									Producto
+								</Text>
+								<Text
+									color='gray.500'
+									fontWeight='semibold'
+									letterSpacing='wide'
+									textTransform='uppercase'
+									fontSize='sm'
+								>
+									Tamaño
+								</Text>
+								<Text
+									color='gray.500'
+									fontWeight='semibold'
+									letterSpacing='wide'
+									textTransform='uppercase'
+									fontSize='sm'
+								>
+									Cantidad
+								</Text>
+								<Text
+									color='gray.500'
+									fontWeight='semibold'
+									letterSpacing='wide'
+									textTransform='uppercase'
+									fontSize='sm'
+								>
+									Precio
+								</Text>
+							</Flex>
+						</Center>
+						<Divider />
+						<Center flexDir='column'>{products}</Center>
+
+						<Box
+							w={{ sm: '100%', lg: '40%' }}
+							float='right'
+							mt={8}
+							pr={{ sm: '0', lg: '98' }}
 						>
-							Tamaño
-						</Text>
-						<Text
-							color='gray.500'
-							fontWeight='semibold'
-							letterSpacing='wide'
-							textTransform='uppercase'
-							fontSize='sm'
-						>
-							Cantidad
-						</Text>
-						<Text
-							color='gray.500'
-							fontWeight='semibold'
-							letterSpacing='wide'
-							textTransform='uppercase'
-							fontSize='sm'
-						>
-							Precio
-						</Text>
-					</Flex>
-				</Center>
-				<Divider />
-				<Center flexDir='column'>{products}</Center>
-				<Divider />
+							<Flex dir='row' justify='space-between'>
+								<Text
+									color='gray.500'
+									fontWeight='semibold'
+									letterSpacing='wide'
+									textTransform='uppercase'
+									fontSize='sm'
+								>
+									Subtotal
+								</Text>
+								<Text fontSize='lg'>${total}</Text>
+							</Flex>
+							<Link
+								w='100%'
+								m={8}
+								rounded={'md'}
+								_hover={{
+									textDecoration: 'none',
+								}}
+								color={'white'}
+								colorScheme={'black'}
+								href='Checkout'
+							>
+								<Center
+									bg={'gray.800'}
+									borderRadius='md'
+									w={'100%'}
+									padding={'3'}
+									justifyContent={'center'}
+								>
+									<Text fontSize={'lg'} fontWeight={'bold'}>
+										PAGAR
+									</Text>
+								</Center>
+							</Link>
+						</Box>
+					</>
+				)}
 			</Box>
 		</>
 	)
