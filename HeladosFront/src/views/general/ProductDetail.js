@@ -86,10 +86,11 @@ const ProductDetail = () => {
 		} else {
 			price = product.product.precios[2].price
 		}
+		const compoundID = id + size
 
 		setCart((oldCart) => [
 			...oldCart,
-			{ name, imageURL, size, numberOfPints, id, price },
+			{ name, imageURL, size, numberOfPints, id: compoundID, price },
 		])
 	}
 
