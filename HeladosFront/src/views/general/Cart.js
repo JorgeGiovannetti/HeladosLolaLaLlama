@@ -31,10 +31,19 @@ const Cart = () => {
 	const products = cart[0].map(
 		({ name, imageURL, size, numberOfPints, id, price }) => {
 			const setNewNumberOfPints = (newNumOfPints) => {
-				setCart((oldCart) => [
-					...oldCart.filter((product) => product.id !== id),
-					{ name, imageURL, size, numberOfPints: newNumOfPints, id, price },
-				])
+				setCart((oldCart) => {
+					let newCart = [...oldCart]
+					const index = newCart.findIndex((product) => product.id === id)
+					newCart[index] = {
+						name,
+						imageURL,
+						size,
+						numberOfPints: newNumOfPints,
+						id,
+						price,
+					}
+					return newCart
+				})
 			}
 
 			total += numberOfPints * price
