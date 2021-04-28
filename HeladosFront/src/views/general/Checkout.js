@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
 	Box,
 	Center,
@@ -16,6 +16,9 @@ import {
 	InputGroup,
 	Alert,
 	AlertIcon,
+	Button,
+	FormControl,
+	FormLabel,
 } from '@chakra-ui/react'
 import Navbar from '../../components/general/Navbar'
 import { useSetRecoilState, useRecoilState } from 'recoil'
@@ -31,6 +34,15 @@ const Checkout = () => {
 
 	const placeOrder = () => {
 		setCart([])
+	}
+
+	// Validate functions
+	function validateName(value) {
+		let error
+		if (!value) {
+			error = 'Name is required'
+		}
+		return error
 	}
 
 	const products = cart[0].map(
@@ -82,6 +94,21 @@ const Checkout = () => {
 		}
 	)
 
+	const [name, setName] = useState('')
+	const [lastName, setLastName] = useState('')
+	const [phoneNumber, setPhoneNumber] = useState('')
+	const [email, setEmail] = useState('')
+	const [address, setAddress] = useState('')
+	const [town, setTown] = useState('')
+	const [zipCode, setZipCode] = useState('')
+
+	const handleSubmit = (event) => {
+		event.preventDefault()
+		// alert(
+		// 	`${name}, ${lastName}, ${phoneNumber}, ${email}, ${address}, ${town}, ${zipCode}`
+		// )
+	}
+
 	return (
 		<>
 			<Navbar />
@@ -113,70 +140,140 @@ const Checkout = () => {
 							<Text fontSize='xl' mb={4}>
 								Detalles de entrega
 							</Text>
-							<Stack
-								direction={{ sm: 'column', lg: 'row' }}
-								spacing={8}
-								align='center'
-							>
-								<Stack direction='column' spacing={2} w='100%'>
-									<Text fontSize='md'>Nombre</Text>
-									<Input placeholder='Nombre' />
+							<form onSubmit={handleSubmit}>
+								<Stack
+									direction={{ sm: 'column', lg: 'row' }}
+									spacing={8}
+									align='center'
+								>
+									<Stack direction='column' spacing={2} w='100%'>
+										<FormControl isRequired>
+											<FormLabel>Nombre</FormLabel>
+											<Input
+												placeholder='Nombre'
+												size='lg'
+												onChange={(event) => setName(event.currentTarget.value)}
+											/>
+										</FormControl>
+									</Stack>
+									<Stack direction='column' spacing={2} w='100%'>
+										<FormControl isRequired>
+											<FormLabel>Apellido</FormLabel>
+											<Input
+												placeholder='Apellido'
+												size='lg'
+												onChange={(event) =>
+													setLastName(event.currentTarget.value)
+												}
+											/>
+										</FormControl>
+									</Stack>
+								</Stack>
+								<Stack
+									direction={{ sm: 'column', lg: 'row' }}
+									spacing={8}
+									align='center'
+									my={8}
+								>
+									<Stack direction='column' spacing={2} w='100%'>
+										<FormControl isRequired>
+											<FormLabel>Teléfono</FormLabel>
+											<InputGroup>
+												<InputLeftElement
+													pointerEvents='none'
+													children={<HiPhone color='gray.300' />}
+												/>
+												<Input
+													type='tel'
+													placeholder='Teléfono'
+													size='lg'
+													onChange={(event) =>
+														setPhoneNumber(event.currentTarget.value)
+													}
+												/>
+											</InputGroup>
+										</FormControl>
+									</Stack>
+									<Stack direction='column' spacing={2} w='100%'>
+										<FormControl isRequired>
+											<FormLabel>Correo electrónico</FormLabel>
+											<InputGroup>
+												<InputLeftElement
+													pointerEvents='none'
+													children={<HiOutlineMail color='gray.300' />}
+												/>
+												<Input
+													type='email'
+													placeholder='Correo electrónico'
+													size='lg'
+													onChange={(event) =>
+														setEmail(event.currentTarget.value)
+													}
+												/>
+											</InputGroup>
+										</FormControl>
+									</Stack>
 								</Stack>
 								<Stack direction='column' spacing={2} w='100%'>
-									<Text fontSize='md'>Apellido</Text>
-									<Input placeholder='Apellido' />
-								</Stack>
-							</Stack>
-							<Stack
-								direction={{ sm: 'column', lg: 'row' }}
-								spacing={8}
-								align='center'
-								my={8}
-							>
-								<Stack direction='column' spacing={2} w='100%'>
-									<Text fontSize='md'>Teléfono</Text>
-									<InputGroup>
-										<InputLeftElement
-											pointerEvents='none'
-											children={<HiPhone color='gray.300' />}
+									<FormControl isRequired>
+										<FormLabel>Dirección</FormLabel>
+										<Input
+											placeholder='Calle y número'
+											size='lg'
+											onChange={(event) =>
+												setAddress(event.currentTarget.value)
+											}
 										/>
-										<Input type='tel' placeholder='Teléfono' />
-									</InputGroup>
+									</FormControl>
 								</Stack>
-								<Stack direction='column' spacing={2} w='100%'>
-									<Text fontSize='md'>Correo electrónico</Text>
-									<InputGroup>
-										<InputLeftElement
-											pointerEvents='none'
-											children={<HiOutlineMail color='gray.300' />}
-										/>
-										<Input type='tel' placeholder='Correo electrónico' />
-									</InputGroup>
+								<Stack
+									direction={{ sm: 'column', lg: 'row' }}
+									spacing={8}
+									align='center'
+									my={8}
+								>
+									<Stack direction='column' spacing={2} w='100%'>
+										<FormControl isRequired>
+											<FormLabel>Municipio</FormLabel>
+											<Input
+												placeholder='Municipio'
+												size='lg'
+												onChange={(event) => setTown(event.currentTarget.value)}
+											/>
+										</FormControl>
+									</Stack>
+									<Stack direction='column' spacing={2} w='100%'>
+										<FormControl isRequired>
+											<FormLabel>Código postal</FormLabel>
+											<Input
+												type='number'
+												placeholder='Código postal'
+												size='lg'
+												onChange={(event) =>
+													setZipCode(event.currentTarget.value)
+												}
+											/>
+										</FormControl>
+									</Stack>
 								</Stack>
-							</Stack>
-							<Stack direction='column' spacing={2} w='100%'>
-								<Text fontSize='md'>Dirección</Text>
-								<Input placeholder='Calle y número' />
-							</Stack>
-							<Stack
-								direction={{ sm: 'column', lg: 'row' }}
-								spacing={8}
-								align='center'
-								my={8}
-							>
-								<Stack direction='column' spacing={2} w='100%'>
-									<Text fontSize='md'>Municipio</Text>
-									<Input placeholder='Municipio' />
-								</Stack>
-								<Stack direction='column' spacing={2} w='100%'>
-									<Text fontSize='md'>Código postal</Text>
-									<Input placeholder='Código postal' />
-								</Stack>
-							</Stack>
-							<Alert status='warning' borderRadius='md'>
-								<AlertIcon />
-								<i>Solo se permiten pedidos en el área de Tlaxcala 🇲🇽</i>
-							</Alert>
+								<Alert status='warning' borderRadius='md' my={4}>
+									<AlertIcon />
+									<i>Solo se permiten pedidos en el área de Tlaxcala 🇲🇽</i>
+								</Alert>
+								<Button variant='unstyled' type='submit' width='full'>
+									<Center
+										bg={'gray.800'}
+										borderRadius='md'
+										w={'100%'}
+										padding={'3'}
+										justifyContent={'center'}
+									>
+										<Text fontSize={'lg'} fontWeight={'bold'} color='white'>
+											REALIZAR PEDIDO
+										</Text>
+									</Center>
+								</Button>
+							</form>
 						</Box>
 						{/* Order details */}
 						<Stack w={{ sm: '100%', lg: '50%' }}>
