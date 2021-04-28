@@ -19,6 +19,14 @@ import {
 	Button,
 	FormControl,
 	FormLabel,
+	Modal,
+	ModalOverlay,
+	ModalContent,
+	ModalHeader,
+	ModalFooter,
+	ModalBody,
+	ModalCloseButton,
+	useDisclosure,
 } from '@chakra-ui/react'
 import Navbar from '../../components/general/Navbar'
 import { useSetRecoilState, useRecoilState } from 'recoil'
@@ -102,11 +110,11 @@ const Checkout = () => {
 	const [town, setTown] = useState('')
 	const [zipCode, setZipCode] = useState('')
 
+	const { isOpen, onOpen, onClose } = useDisclosure()
+
 	const handleSubmit = (event) => {
 		event.preventDefault()
-		// alert(
-		// 	`${name}, ${lastName}, ${phoneNumber}, ${email}, ${address}, ${town}, ${zipCode}`
-		// )
+		onOpen()
 	}
 
 	return (
@@ -327,33 +335,24 @@ const Checkout = () => {
 									</Stack>
 								</Center>
 							</Box>
-							<Flex mt={8}>
-								<Link
-									w='100%'
-									m={8}
-									rounded={'md'}
-									_hover={{
-										textDecoration: 'none',
-									}}
-									color={'white'}
-									colorScheme={'black'}
-									onClick={placeOrder}
-								>
-									<Center
-										bg={'gray.800'}
-										borderRadius='md'
-										w={'100%'}
-										padding={'3'}
-										justifyContent={'center'}
-									>
-										<Text fontSize={'lg'} fontWeight={'bold'}>
-											REALIZAR PEDIDO
-										</Text>
-									</Center>
-								</Link>
-							</Flex>
 						</Stack>
 					</Stack>
+					<Modal isOpen={isOpen} onClose={onClose}>
+						<ModalOverlay />
+						<ModalContent>
+							<ModalHeader>¡Tu orden fue registrada!</ModalHeader>
+							<ModalBody>
+								Gracias por realizar un pedido de Lola La Llama. Revisa tu
+								correo electrónico donde te llegará una confirmación de tu
+								pedido.
+							</ModalBody>
+							<ModalFooter>
+								<Button colorScheme='blue' mr={3} onClick={onClose}>
+									Cerrar
+								</Button>
+							</ModalFooter>
+						</ModalContent>
+					</Modal>
 				</Box>
 			)}
 		</>
