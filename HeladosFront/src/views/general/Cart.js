@@ -71,7 +71,7 @@ const Cart = () => {
 				<Box key={id} w='100%'>
 					<Flex justify='space-around' w='100%' align='center' m={4}>
 						<Link
-							href={`products/${id}`}
+							href={`products/${id.slice(0, id.length - 2)}`}
 							_hover={{
 								textDecoration: 'none',
 							}}

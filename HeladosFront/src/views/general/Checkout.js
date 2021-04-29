@@ -80,7 +80,7 @@ const Checkout = () => {
 							my={2}
 						>
 							<Link
-								href={`products/${id}`}
+								href={`products/${id.slice(0, id.length - 2)}`}
 								_hover={{
 									textDecoration: 'none',
 								}}
