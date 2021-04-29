@@ -114,6 +114,7 @@ const ProductDetail = () => {
 							<Stack direction={{ sm: 'column', lg: 'row' }} spacing={16}>
 								<Image
 									src={imageURL}
+									objectFit='cover'
 									alt={'Helado de ' + product.flavor}
 									w='md'
 									rounded='md'
