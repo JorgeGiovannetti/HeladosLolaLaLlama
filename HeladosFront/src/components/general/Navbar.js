@@ -71,7 +71,7 @@ const Navbar = ({ home = false }) => {
 									px={2}
 									py={1}
 									rounded={'md'}
-									href={'Landing'}
+									href={'/'}
 									color={'gray.800'}
 									_hover={{
 										textDecoration: 'none',

@@ -4,6 +4,7 @@ import Navbar from '../../components/general/Navbar'
 import { Center, SimpleGrid } from '@chakra-ui/layout'
 import useProducts from './hooks/useProducts'
 import Product from '../../components/general/Product'
+import { Redirect } from 'react-router-dom'
 
 const Products = () => {
 	const { products, isLoading, error } = useProducts()
@@ -17,7 +18,7 @@ const Products = () => {
 		<Center>
 			<Spinner size='xl' color={'gray'} />
 		</Center>
-	) : (
+	) : products === undefined ? null : (
 		products.map(({ categories, flavor, id, product }) => (
 			<Product
 				categories={categories}
@@ -31,10 +32,16 @@ const Products = () => {
 
 	return (
 		<>
-			<Navbar />
-			<SimpleGrid minChildWidth='360px' gap={12} w='100%' p='12' mt={12}>
-				{componentsChild}
-			</SimpleGrid>
+			{!isLoading && products === undefined ? (
+				<Redirect to='/' />
+			) : (
+				<>
+					<Navbar />
+					<SimpleGrid minChildWidth='360px' gap={12} w='100%' p='12' mt={12}>
+						{componentsChild}
+					</SimpleGrid>
+				</>
+			)}
 		</>
 	)
 }
