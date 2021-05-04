@@ -13,7 +13,7 @@ struct CategoryController: RouteCollection {
         let categoriesRoute = routes.grouped("api", "category")
         categoriesRoute.get(use: getAllHandler)
         categoriesRoute.get(":categoryID", use: getHandler)
-        categoriesRoute.get(":categoryID","helado", use: getHeladosHandler)
+        categoriesRoute.get(":categoryID","helados", use: getHeladosHandler)
         let tokenAuthMiddleware = Token.authenticator()
         let guardAuthMiddleware = Administrator.guardMiddleware()
         let tokenAuthGroup = categoriesRoute.grouped(tokenAuthMiddleware, guardAuthMiddleware)

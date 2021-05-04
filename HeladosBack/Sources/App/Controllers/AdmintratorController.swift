@@ -62,5 +62,5 @@ struct AdministratorController: RouteCollection{
 struct UpdateAdminData: Content {
     var id: UUID
     var email: String
-    var name:String
+    var name: String
 }

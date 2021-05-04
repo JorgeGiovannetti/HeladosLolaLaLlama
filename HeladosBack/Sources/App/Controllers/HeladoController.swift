@@ -13,7 +13,7 @@ struct HeladoController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
         let heladosRoute = routes.grouped("api", "helados")
         heladosRoute.get(use: getAllHandler)
-        heladosRoute.get("sortedFavlor", use: getAllSortedFlavorHandler)
+        heladosRoute.get("sortedFlavor", use: getAllSortedFlavorHandler)
         heladosRoute.get(":heladoID" ,use: getHandler)
         heladosRoute.get("searchFlavor" ,use: searchFlavorHandler)
         heladosRoute.get(":heladoID","categories", use: getCategoriesHandler)
@@ -22,7 +22,7 @@ struct HeladoController: RouteCollection {
         let guardAuthMiddleware = Administrator.guardMiddleware()
         let tokenAuthGroup = heladosRoute.grouped(tokenAuthMiddleware, guardAuthMiddleware)
         tokenAuthGroup.post(use: createHandler)
-        tokenAuthGroup.put(":heladoID", "favlor", use: updateFlavorHandler)
+        tokenAuthGroup.put(":heladoID", "flavor", use: updateFlavorHandler)
         tokenAuthGroup.put(":heladoID", use: updateHandler)
         tokenAuthGroup.delete(":heladoID",use:deleteHandler)
         tokenAuthGroup.post(":heladoID" , "categories" , ":categoryID", use: addCategoriesHandler)

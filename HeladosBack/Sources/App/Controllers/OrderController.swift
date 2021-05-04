@@ -6,7 +6,7 @@
 //
 
 import Vapor
-import Fluent
+import Fluentp
 import SendGrid
 import Stripe
 
@@ -27,8 +27,8 @@ struct OrderController: RouteCollection {
         tokenAuthGroup.get("lastMonthPaidOrders", use: getAllPaidOrdersFromLastMonthHandler)
         tokenAuthGroup.get("paid", use: getAllPaidOrdersHandler)
         tokenAuthGroup.get("profitsLastMonth", use: getAllProfitsFromLastMonthHandler)
-        tokenAuthGroup.get("numberOrderLastMonth", use: getNUmberOfOrdersHandler)
-        tokenAuthGroup.get("numberPaidOrderLastMonth", use: getNUmberOfPaidOrdersHandler)
+        tokenAuthGroup.get("numberOrdersLastMonth", use: getNUmberOfOrdersHandler)
+        tokenAuthGroup.get("numberPaidOrdersLastMonth", use: getNUmberOfPaidOrdersHandler)
     }
     
     func sendEmail(_ req: Request, email: String, contentHTML: String) throws -> EventLoopFuture<HTTPStatus> {
