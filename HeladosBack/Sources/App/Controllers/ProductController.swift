@@ -15,8 +15,6 @@ struct ProductController: RouteCollection {
         productsRoute.get(":productID", use: getHandler)
         productsRoute.get("available", use: getAllAvailableHandler)
         productsRoute.get("availableHelados", use: getAllAvailableHeladosHandler)
-        
-      
     }
     
     func getAllHandler(_ req: Request) throws -> EventLoopFuture<[Product]> {

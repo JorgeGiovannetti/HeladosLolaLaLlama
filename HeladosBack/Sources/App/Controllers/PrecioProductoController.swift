@@ -16,7 +16,10 @@ struct PrecioProductoController: RouteCollection {
         let tokenAuthMiddleware = Token.authenticator()
         let guardAuthMiddleware = Administrator.guardMiddleware()
         let tokenAuthGroup = precioProductoRoute.grouped(tokenAuthMiddleware, guardAuthMiddleware)
-        tokenAuthGroup.post(use: createHandler)
+        tokenAuthGroup.post(use: createHandler);
+        tokenAuthGroup.post("updatePrice", ":priceID", use: updatePrecioProducto)
+        tokenAuthGroup.post("updatePriceSize", ":priceID", use: updatePrecioSizeProducto)
+        tokenAuthGroup.delete(":priceID", use: deletePrecioProducto)
     }
     
     func getAllHandler(_ req: Request) throws -> EventLoopFuture<[PrecioProducto]> {
@@ -39,10 +42,39 @@ struct PrecioProductoController: RouteCollection {
         }
     }
     
+    func updatePrecioProducto(_ req: Request) throws -> EventLoopFuture<PrecioProducto>{
+        let data = try req.content.decode(PrecioProductoUpdate.self)
+        return PrecioProducto.find(req.parameters.get("priceID"), on: req.db).unwrap(or: Abort(.notFound)).flatMap { precioProducto -> EventLoopFuture<PrecioProducto> in
+            precioProducto.price = data.price
+            return precioProducto.update(on: req.db).map{precioProducto}
+        }
+    }
+    
+    func updatePrecioSizeProducto(_ req: Request) throws -> EventLoopFuture<PrecioProducto>{
+        let data = try req.content.decode(PrecioProductoSizeUpdate.self)
+        return PrecioProducto.find(req.parameters.get("priceID"), on: req.db).unwrap(or: Abort(.notFound)).flatMap { precioProducto -> EventLoopFuture<PrecioProducto> in
+            precioProducto.size = data.size
+            return precioProducto.update(on: req.db).map{precioProducto}
+        }
+    }
+    
+    func deletePrecioProducto(_ req: Request) throws -> EventLoopFuture<HTTPStatus>{
+        return PrecioProducto.find(req.parameters.get("priceID"), on: req.db).unwrap(or: Abort(.notFound)).flatMap { precioProducto  in
+            return precioProducto.delete(on: req.db)
+        }.transform(to: .ok)
+    }
+    
 }
 
 struct PrecioProductoCreate: Content{
     var price: Float
     var size: String?
     var product: UUID
+}
+
+struct PrecioProductoUpdate: Content{
+    var price: Float
+}
+struct PrecioProductoSizeUpdate: Content{
+    var size: String?
 }

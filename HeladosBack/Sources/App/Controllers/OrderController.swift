@@ -6,7 +6,7 @@
 //
 
 import Vapor
-import Fluentp
+import Fluent
 import SendGrid
 import Stripe
 
@@ -33,7 +33,7 @@ struct OrderController: RouteCollection {
     
     func sendEmail(_ req: Request, email: String, contentHTML: String) throws -> EventLoopFuture<HTTPStatus> {
         let to = EmailAddress(email: email)
-        let from = EmailAddress(email: "a01197108@itesm.mx", name: "Cecy Ponce Cakes")
+        let from = EmailAddress(email: "A00822926@itesm.mx", name: "Helados Lola La Llama")
         let personalization = Personalization(to: [to], subject: "Nuevo Pedido!")
         var emailContent: [String: String] = [:]
         emailContent["type"] = "text/html"
@@ -199,6 +199,7 @@ struct OrderController: RouteCollection {
 //    func createOrder(req: Request, withBox: Bool, clientID : UUID, order: Order, dataBox: OrderWithBoxCreateData?, myOrder: EventLoopFuture<[(Product, UInt8, Bool)]>) throws -> EventLoopFuture<Order> {
 //        var suma : Float = 0.0
 //        let idBox: UUID = UUID()
+//
 //        return  Client
 //            .query(on: req.db)
 //            .filter(\.$id == clientID)
@@ -238,7 +239,7 @@ struct OrderController: RouteCollection {
 //            }
 //        }
 //    }
-//
+
 }
 
 
@@ -260,9 +261,8 @@ struct OrderWithBoxCreateData:  Content {
     var dedication: String?
 }
 
-
 enum TransactionError: Error {
-    case productsAlreadyOuOfStock
+    case productsAlreadyOutOfStock
 }
 
 struct ChargeToken: Content {

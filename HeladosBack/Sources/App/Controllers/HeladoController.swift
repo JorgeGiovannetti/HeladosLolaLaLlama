@@ -37,8 +37,10 @@ struct HeladoController: RouteCollection {
     }
     
 
-    func getAllFlavorsHandler(_ req: Request) throws ->  EventLoopFuture<[Helado]> {
-        return Helado.query(on: req.db).field(\.$flavor).unique().all()
+    func getAllFlavorsHandler(_ req: Request) throws ->  EventLoopFuture<[String]> {
+        return Helado.query(on: req.db).unique().all(\.$flavor).map { sabores in
+            return sabores
+        }
     }
 
     func getAllSortedFlavorHandler(_ req: Request) throws ->  EventLoopFuture<[Helado]> {
@@ -102,10 +104,21 @@ struct HeladoController: RouteCollection {
         -> EventLoopFuture<Helado> {
         let data = try req.content.decode(HeladoUpdateData.self)
       
-        return Helado.find(req.parameters.get("heladoID"), on: req.db).unwrap(or: Abort(.notFound))
-        .flatMap { helado in
-            helado.flavor = data.flavor
-            return helado.save(on: req.db).map { helado }
+        let product = Product.find(req.parameters.get("heladoID"), on: req.db).unwrap(or: Abort(.notFound))
+        .flatMap { producto -> EventLoopFuture<Product> in
+            producto.name = (data.name != nil) ? data.name! : producto.name
+            producto.description = (data.description != nil) ? data.description! : producto.description
+            producto.available = (data.available != nil) ? data.available! : producto.available
+            return producto.update(on: req.db).map { producto }
+        }
+        
+        let helado = Helado.find(req.parameters.get("heladoID"), on: req.db).unwrap(or: Abort(.notFound)).flatMap { helado -> EventLoopFuture<Helado> in
+            helado.flavor = (data.flavor != nil) ? data.flavor! : helado.flavor
+            return helado.update(on: req.db).map { helado }
+        }
+
+        return product.and(helado).map { (p,h) in
+            return h
         }
     }
     
@@ -161,7 +174,10 @@ struct HeladoCreateData:  Content {
 }
 
 struct HeladoUpdateData:  Content {
-    var flavor: String
+    var flavor: String?
+    var name: String?
+    var description: String?
+    var available: Bool?
 }
 
 struct HeladoUpdateFlavorData:  Content {

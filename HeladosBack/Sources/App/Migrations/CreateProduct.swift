@@ -12,7 +12,6 @@ struct CreateProduct: Migration {
         database.schema("product")
             .id()
             .field("name", .string, .required)
-            .field("price", .float, .required)
             .field("description", .string)
             .field("available", .bool, .required)
             .unique(on: "name")

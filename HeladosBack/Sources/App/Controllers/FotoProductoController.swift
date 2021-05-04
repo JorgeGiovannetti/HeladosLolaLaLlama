@@ -17,6 +17,7 @@ struct FotoProductoController: RouteCollection {
         let guardAuthMiddleware = Administrator.guardMiddleware()
         let tokenAuthGroup = fotoProductoRoute.grouped(tokenAuthMiddleware, guardAuthMiddleware)
         tokenAuthGroup.post(use: createHandler)
+        tokenAuthGroup.delete(":fotoID", use: deleteFotoProducto)
     }
     
     func getAllHandler(_ req: Request) throws -> EventLoopFuture<[FotoProducto]> {
@@ -36,6 +37,12 @@ struct FotoProductoController: RouteCollection {
             let myNewPhoto = FotoProducto(foto: fotoProducto.foto, product: p.id!)
             return myNewPhoto.save(on: req.db).map{myNewPhoto}
         }
+    }
+    
+    func deleteFotoProducto(_ req: Request)  throws -> EventLoopFuture<HTTPStatus> {
+        FotoProducto.find(req.parameters.get("fotoID"), on: req.db).unwrap(or: Abort(.notFound)).flatMap { foto in
+            foto.delete(on: req.db)
+        }.transform(to: .ok)
     }
     
 }
