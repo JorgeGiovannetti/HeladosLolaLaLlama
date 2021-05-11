@@ -14,8 +14,7 @@ struct OrderController: RouteCollection {
   
     func boot(routes: RoutesBuilder) throws {
         let orderRoute = routes.grouped("api", "orders")
-       // orderRoute.post(use: createHandler)
-       // orderRoute.post("withBox", use: createWithBoxHandler)
+        orderRoute.post(use: createHandler)
         orderRoute.get(":orderID", use: getHandler)
         orderRoute.post("pay", use: chargeCustomer)
        
@@ -48,68 +47,6 @@ struct OrderController: RouteCollection {
             return req.eventLoop.makeFailedFuture(error)
         }
     }
-//
-//    func createHandler(_ req: Request) throws -> EventLoopFuture<Order> {
-//        let data = try req.content.decode(OrderCreateData.self)
-//        let order = Order(dateOfOder: Date.init(), specification: data.specification, client: data.client, shippingAddress: data.shippingAddress)
-//
-//        let productsInfo = data.products.split(separator: ",").map{$0.split(separator: ":")}
-//        let idProducts : [UUID] = productsInfo.map({(UUID(String($0.first ?? "")) ?? UUID())})
-//
-//        let myOrder = Product.query(on: req.db).filter(\.$id ~~ idProducts).all().flatMapThrowing { (productArray) -> [(Product, UInt8, Bool)] in
-//            var productos: [(Product, UInt8, Bool)] = []
-//            for product in productArray{
-//                if let index = productsInfo.firstIndex(where: { UUID(String($0.first ?? "")) == product.id }) {
-//                    let quantity : UInt8 = UInt8(productsInfo[index].last ?? "0") ?? 0
-//                    let id: UUID = UUID(String(productsInfo[index].first ?? "")) ?? UUID()
-//                    productos.append((product,quantity, false))
-//                }
-//            }
-//
-//            if(productos.isEmpty){
-//                throw Abort(.badRequest, reason: "Invalid products")
-//            }
-//            return productos
-//        }
-//
-//        do{
-//            return  try createOrder(req: req, withBox: false, clientID: data.client, order: order, dataBox: nil, myOrder: myOrder)
-//        }catch let error{
-//            throw error
-//        }
-//    }
-    
-//    func createWithBoxHandler(_ req: Request) throws -> EventLoopFuture<Order> {
-//        let data = try req.content.decode(OrderWithBoxCreateData.self)
-//        let order = Order(dateOfOder: Date.init(), specification: data.specification, client: data.client, shippingAddress: data.shippingAddress)
-//        let productsInfo = data.products.split(separator: ",").map{$0.split(separator: ":")}
-//
-//        let productsIDInBox : [UUID] = data.productsInBox.split(separator: ",").map({(UUID(uuidString: String($0)) ?? UUID())})
-//        let idProducts : [UUID] = productsInfo.map({(UUID(String($0.first ?? "")) ?? UUID())})
-//
-//        let myOrder = Product.query(on: req.db).filter(\.$id ~~ idProducts).all().flatMapThrowing { (productArray) -> [(Product, UInt8, Bool)] in
-//            var productos: [(Product, UInt8, Bool)] = []
-//            for product in productArray{
-//                if let index = productsInfo.firstIndex(where: { UUID(String($0.first ?? "")) == product.id }) {
-//                    let quantity : UInt8 = UInt8(productsInfo[index].last ?? "0") ?? 0
-//                    let id :UUID = UUID(String(productsInfo[index].first ?? "")) ?? UUID()
-//                    productos.append((product,quantity, productsIDInBox.contains(id)))
-//                }
-//            }
-//
-//            if(productos.isEmpty){
-//                throw Abort(.badRequest, reason: "Invalid products")
-//            }
-//            return productos
-//        }
-//
-//        do{
-//            return  try createOrder(req: req, withBox: true, clientID: data.client, order: order, dataBox: data, myOrder: myOrder)
-//        }catch let error{
-//            throw error
-//        }
-//
-//    }
 
     func chargeCustomer(_ req: Request) throws -> EventLoopFuture<HTTPStatus> {
         let data = try req.content.decode(ChargeToken.self)
@@ -195,70 +132,109 @@ struct OrderController: RouteCollection {
         return Order.query(on: req.db).filter(\.$paid == true).filter(\.$dateOfOrder > Date().addingTimeInterval(-15000)).count()
     }
     
+    func createHandler(_ req: Request) throws -> EventLoopFuture<Order> {
+//      Preprocesar data para convertirlo a Order y un listado de Products (con su info)
+        let data = try req.content.decode(OrderCreateData.self)
+        let order = Order(dateOfOder: Date.init(), specification: data.specification, client: data.client, shippingAddress: data.shippingAddress)
+        let productsInfo = data.products.split(separator: ",").map{$0.split(separator: ":")}
+        let idProducts : [UUID] = productsInfo.map({(UUID(String($0.first ?? "")) ?? UUID())})
+
+//      Por cada producto recolectado en data, comparar la info con la db y generar el listado final de productos ordenados por el cliente
+        let orderProducts = Product.query(on: req.db).filter(\.$id ~~ idProducts).all().flatMapThrowing { (productArray) -> [(Product, UInt8, String)] in
+            var finalListProducts : [(Product, UInt8, String)] = []
+            for product in productArray{
+                if let index = productsInfo.firstIndex(where:{UUID(String($0.first ?? "")) == product.id}) {
+                    //  CHECAR ESTO
+                    //   Formato de Helado : product:quantity:size, ...
+                    let quantity : UInt8 = UInt8(productsInfo[index][1]) ?? 0
+                    let size : String = String(productsInfo[index][2])
+                    finalListProducts.append((product, quantity, size))
+                }
+            }
+            
+//          Si no se pudieron agregar productos, eran invalidos, sino regresar listado final
+            if(finalListProducts.isEmpty){
+                throw Abort(.badRequest, reason: "Invalid products")
+            }
+            return finalListProducts
+        }
+        
+//      Si se pudo generar el listado final de la orden, intentar crearla, sino mandar error
+        do{
+            return  try createOrder(req: req, clientID: data.client, order: order, orderProducts: orderProducts)
+        }catch let error{
+            throw error
+        }
+    }
     
-//    func createOrder(req: Request, withBox: Bool, clientID : UUID, order: Order, dataBox: OrderWithBoxCreateData?, myOrder: EventLoopFuture<[(Product, UInt8, Bool)]>) throws -> EventLoopFuture<Order> {
-//        var suma : Float = 0.0
-//        let idBox: UUID = UUID()
-//
-//        return  Client
-//            .query(on: req.db)
-//            .filter(\.$id == clientID)
-//            .first()
-//            .unwrap(or: Abort(.notAcceptable)).flatMap { (user : Client) -> EventLoopFuture<Order> in
-//                req.db.transaction { connection in
-//                let promise = req.eventLoop.makePromise(of: EventLoopFuture<Order>.self)
-//                let _ = order.save(on: connection).flatMapThrowing { (_) -> (EventLoopFuture<Order>) in
-//
-//
-//                    myOrder.whenComplete { (result) in
-//                       switch result {
-//                           case .success(let myProducts):
-//                               for p in myProducts{
-//                                    let detail = OrderDetail(product: p.0.id!, order: order.id ?? UUID(), quantity: p.1, idBox: (p.2) ? idBox : nil)
-//                                    let _ = detail.save(on: connection)
-//                                    suma += p.0.price*Float(p.1)
-//
-//                                    let _ = p.0.save(on: req.db)
-//                                }
-//                                suma *= 1.036
-//                                suma += 3
-//                                order.total = suma
-//                                promise.succeed(order.save(on: connection).map{order})
-//                           case .failure(let error):
-//                                print(error)
-//                                promise.fail(error)
-//                        }
-//                    }
-//                    return order.save(on: connection).map{order}
-//                }
-//
-//                return promise.futureResult.flatMap { (pro) -> EventLoopFuture<Order> in
-//                    let _ = order.$box.get(on: req.db)
-//                    return pro
-//                }
-//            }
-//        }
-//    }
+    func createOrder(req: Request, clientID : UUID, order: Order, orderProducts: EventLoopFuture<[(Product, UInt8, String)]>) throws -> EventLoopFuture<Order> {
+
+        return  Client.query(on: req.db).filter(\.$id == clientID).first().unwrap(or: Abort(.notAcceptable)).flatMap { (user : Client) -> EventLoopFuture<Order> in
+                req.db.transaction { connection in
+                let promise = req.eventLoop.makePromise(of: EventLoopFuture<Order>.self)
+                let _ = order.save(on: connection).flatMapThrowing { (_) -> (EventLoopFuture<Order>) in
+                    orderProducts.whenComplete { (result) in
+                       switch result {
+                       //  Por cada producto en el listado final, generar OrderDetail y actualizar precio final de la orden
+                           case .success(let myProducts):
+                            var arrayPrecios : [Float] = []
+                            var precioPromise = req.eventLoop.makePromise(of: [Float].self)
+                            for p in myProducts {
+                                //   Formato de Helado : product:quantity:size, ...
+                                let detail = OrderDetail(product: p.0.id!, order: order.id ?? UUID(), quantity: p.1, size: p.2)
+                                let _ = detail.save(on: connection)
+//                                  CHECAR ESTO: RELACIONAR PRECIO CORRECTO DE PRECIOS AL PRODUCTO
+                               
+                                PrecioProducto.find(p.0.id!, on: req.db).unwrap(or: Abort(.notAcceptable)).map { (precioProducto : PrecioProducto)  in
+                                    
+                                    arrayPrecios.append(precioProducto.price *  Float(p.1))
+                                    if(arrayPrecios.count == myProducts.count){
+                                        precioPromise.succeed(arrayPrecios)
+                                    }
+                                }
+                            }
+                        
+                            precioPromise.futureResult.map { p -> Float in
+                                return p.reduce(0.0, +)
+                            }.whenComplete({ res in
+                                switch res {
+                                case .success(let total):
+                                    order.total = total
+           
+                                    promise.succeed(order.save(on: connection).map{order})
+                                case .failure(let error):
+                                    promise.fail(error)
+                                }
+                            })
+                       
+                        
+                           case .failure(let error):
+                                print(error)
+                                promise.fail(error)
+                        }
+                    }
+//                  Finalizar guardando orden
+                    return order.save(on: connection).map{order}
+                }
+
+//                                  CHECAR ESTO
+//              Enviar info de orden
+                return promise.futureResult.flatMap { (pro) -> EventLoopFuture<Order> in
+                    return pro
+                }
+            }
+        }
+    }
 
 }
 
 
 
 struct OrderCreateData:  Content {
-    var shippingAddress: String?
+    var shippingAddress: String
     var specification: String
     var client: UUID
     var products: String
-}
-
-struct OrderWithBoxCreateData:  Content {
-    var shippingAddress: String?
-    var specification: String
-    var client: UUID
-    var products: String
-    var productsInBox: String
-    var addresse: String?
-    var dedication: String?
 }
 
 enum TransactionError: Error {

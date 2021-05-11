@@ -31,11 +31,12 @@ final class OrderDetail: Model {
         
     }
     
-    init(id: UUID? = nil, product: Product.IDValue, order: Order.IDValue, quantity: UInt8, idBox: UUID? = nil) {
+    init(id: UUID? = nil, product: Product.IDValue, order: Order.IDValue, quantity: UInt8, size: String) {
         self.id = id
         self.$product.id = product
         self.$order.id = order
         self.quantity = quantity
+        self.size = size
     }
     
 }
