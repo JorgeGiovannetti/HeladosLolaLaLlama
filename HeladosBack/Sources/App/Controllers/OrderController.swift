@@ -131,11 +131,15 @@ struct OrderController: RouteCollection {
     func getNUmberOfPaidOrdersHandler(_ req: Request) throws -> EventLoopFuture<Int> {
         return Order.query(on: req.db).filter(\.$paid == true).filter(\.$dateOfOrder > Date().addingTimeInterval(-15000)).count()
     }
-    
+    // P Q S
     func createHandler(_ req: Request) throws -> EventLoopFuture<Order> {
 //      Preprocesar data para convertirlo a Order y un listado de Products (con su info)
         let data = try req.content.decode(OrderCreateData.self)
-        let order = Order(dateOfOder: Date.init(), specification: data.specification, client: data.client, shippingAddress: data.shippingAddress)
+        let client = Client(name: data.clientName, email: data.clientEmail, phone: data.clientPhone, address: data.clientAddress)
+        let c = client.save(on: req.db)
+
+        let order = Order(dateOfOder: Date.init(), specification: data.specification, client: client.id!, shippingAddress: data.shippingAddress)
+
         let productsInfo = data.products.split(separator: ",").map{$0.split(separator: ":")}
         let idProducts : [UUID] = productsInfo.map({(UUID(String($0.first ?? "")) ?? UUID())})
 
@@ -161,10 +165,12 @@ struct OrderController: RouteCollection {
         
 //      Si se pudo generar el listado final de la orden, intentar crearla, sino mandar error
         do{
-            return  try createOrder(req: req, clientID: data.client, order: order, orderProducts: orderProducts)
+            return  try createOrder(req: req, clientID: client.id!, order: order, orderProducts: orderProducts)
         }catch let error{
             throw error
         }
+    
+        
     }
     
     func createOrder(req: Request, clientID : UUID, order: Order, orderProducts: EventLoopFuture<[(Product, UInt8, String)]>) throws -> EventLoopFuture<Order> {
@@ -185,12 +191,16 @@ struct OrderController: RouteCollection {
                                 let _ = detail.save(on: connection)
 //                                  CHECAR ESTO: RELACIONAR PRECIO CORRECTO DE PRECIOS AL PRODUCTO
                                
-                                PrecioProducto.find(p.0.id!, on: req.db).unwrap(or: Abort(.notAcceptable)).map { (precioProducto : PrecioProducto)  in
+                                PrecioProducto.query(on: connection).with(\.$product).all().map { (precioProducto : [PrecioProducto])  in
                                     
-                                    arrayPrecios.append(precioProducto.price *  Float(p.1))
-                                    if(arrayPrecios.count == myProducts.count){
-                                        precioPromise.succeed(arrayPrecios)
-                                    }
+                                    let r = precioProducto.filter({$0.product.id == p.0.id! && $0.size == p.2}).first
+                                    
+                                    arrayPrecios.append(r!.price *  Float(p.1))
+                                        if(arrayPrecios.count == myProducts.count){
+                                            precioPromise.succeed(arrayPrecios)
+                                        
+                                        }
+                                   
                                 }
                             }
                         
@@ -233,7 +243,10 @@ struct OrderController: RouteCollection {
 struct OrderCreateData:  Content {
     var shippingAddress: String
     var specification: String
-    var client: UUID
+    var clientName: String
+    var clientEmail: String
+    var clientAddress: String
+    var clientPhone: String
     var products: String
 }
 
