@@ -10,7 +10,7 @@ public func configure(_ app: Application) throws {
     app.middleware.use(CORSMiddleware(configuration: .init(
         allowedOrigin: .all,
         allowedMethods: [.GET, .POST, .PUT, .OPTIONS, .DELETE, .PATCH],
-        allowedHeaders: [.accept, .authorization, .contentType, .origin, .xRequestedWith]
+        allowedHeaders: [.accept, .authorization, .contentType, .origin, .xRequestedWith, .accessControlAllowOrigin, .acceptPost, .accessControl, .accessControlAllowHeaders ]
     )))
     
     let databaseName : String
