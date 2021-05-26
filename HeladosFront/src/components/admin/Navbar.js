@@ -16,7 +16,7 @@ import {
   Stack,
 } from "@chakra-ui/react";
 import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
-import { useAuth } from "../../providers/AuthProvider";
+import { useAuth } from "../../utils/providers/AuthProvider";
 
 const Links = [{to: '', name: "Dashboard"}, {to: 'products/', name: "Products"}, {to: 'orders', name: "Orders"}];
 

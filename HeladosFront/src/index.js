@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
-import AuthProvider from "./providers/AuthProvider";
+import AuthProvider from "./utils/providers/AuthProvider";
 
 const theme = extendTheme({
   colors: {

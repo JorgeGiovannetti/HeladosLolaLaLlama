@@ -21,7 +21,7 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
-import { useAuth } from "../../providers/AuthProvider";
+import { useAuth } from "../../utils/providers/AuthProvider";
 
 const Login = () => {
   const { user, login } = useAuth();
