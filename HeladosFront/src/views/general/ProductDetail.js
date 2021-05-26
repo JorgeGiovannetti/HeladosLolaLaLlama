@@ -22,7 +22,7 @@ import {
 } from '@chakra-ui/react'
 import { Stack } from '@chakra-ui/layout'
 import Navbar from '../../components/general/Navbar'
-import useProduct from './hooks/useProduct'
+import useProduct from '../../utils/hooks/useProduct'
 import { HiShoppingCart } from 'react-icons/hi'
 
 const getCategoryColor = (name) => {

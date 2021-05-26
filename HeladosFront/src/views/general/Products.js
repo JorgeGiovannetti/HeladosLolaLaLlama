@@ -2,7 +2,7 @@ import React from 'react'
 import { Spinner } from '@chakra-ui/react'
 import Navbar from '../../components/general/Navbar'
 import { Center, SimpleGrid } from '@chakra-ui/layout'
-import useProducts from './hooks/useProducts'
+import useProducts from '../../utils/hooks/useProducts'
 import Product from '../../components/general/Product'
 
 const Products = () => {
