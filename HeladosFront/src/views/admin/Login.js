@@ -37,27 +37,22 @@ const Login = () => {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (values) => {
+  const onSubmit = async (values) => {
     setIsLoading(true);
-    const { email, password } = values;
-    login(email, password)
-      .then(() => {
-        setAuthAlert({
-          status: "success",
-          message: "Ingresando!",
-        });
-        setIsLoading(false);
-        setShowPassword(false);
-        history.push("/admin");
-      })
-      .catch((e) => {
-        setIsLoading(false);
-        setShowPassword(false);
-        setAuthAlert({
-          status: "error",
-          message: "Usuario o contraseña inválida",
-        });
+    setShowPassword(false);
+
+    const { username, password } = values;
+    try {
+      await login(username, password);
+      history.push("/admin");
+    }
+    catch {
+      setIsLoading(false);
+      setAuthAlert({
+        status: "error",
+        message: "Usuario o contraseña inválida",
       });
+    }
   };
 
   if (user) {
@@ -98,18 +93,17 @@ const Login = () => {
           )}
           <Stack spacing={4}>
             <FormControl
-              id="email"
-              isInvalid={!!errors?.email?.message}
-              errortext={errors?.email?.message}
+              id="username"
+              isInvalid={!!errors?.username?.message}
+              errortext={errors?.username?.message}
             >
-              <FormLabel>Correo Electrónico</FormLabel>
+              <FormLabel>Usuario</FormLabel>
               <Input
-                type="email"
-                {...register("email", {
-                  required: "Ingresa el correo electrónico",
+                {...register("username", {
+                  required: "Ingresa el nombre de usuario",
                 })}
               />
-              <FormErrorMessage>{errors?.email?.message}</FormErrorMessage>
+              <FormErrorMessage>{errors?.username?.message}</FormErrorMessage>
             </FormControl>
             <FormControl
               id="password"
