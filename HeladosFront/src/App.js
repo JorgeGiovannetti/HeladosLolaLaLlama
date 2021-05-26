@@ -20,11 +20,11 @@ const App = () => {
 		>
 			<Router>
 				<Switch>
-					{routes.map((route) => (
-						<Route exact path={route.path} component={route.component} />
+					{routes.map((route, key) => (
+						<Route key={key} exact path={route.path} component={route.component} />
 					))}
-					{protectedRoutes.map((route) => (
-						<PrivateRoute exact path={route.path} component={route.component} />
+					{protectedRoutes.map((route, key) => (
+						<PrivateRoute key={key} exact path={route.path} component={route.component} />
 					))}
 					<Redirect to='/' />
 				</Switch>
