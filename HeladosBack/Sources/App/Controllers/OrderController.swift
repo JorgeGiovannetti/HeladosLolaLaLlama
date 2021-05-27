@@ -21,12 +21,31 @@ struct OrderController: RouteCollection {
         let guardAuthMiddleware = Administrator.guardMiddleware()
         let tokenAuthGroup = orderRoute.grouped(tokenAuthMiddleware, guardAuthMiddleware)
         tokenAuthGroup.get(use: getAllHandler)
+        tokenAuthGroup.patch(":orderID", "approved", use: approvedOrder)
         tokenAuthGroup.get("lastMonthOrders", use: getAllOrdersFromLastMonthHandler)
         tokenAuthGroup.get("lastMonthPaidOrders", use: getAllPaidOrdersFromLastMonthHandler)
         tokenAuthGroup.get("paid", use: getAllPaidOrdersHandler)
         tokenAuthGroup.get("profitsLastMonth", use: getAllProfitsFromLastMonthHandler)
         tokenAuthGroup.get("numberOrdersLastMonth", use: getNUmberOfOrdersHandler)
         tokenAuthGroup.get("numberPaidOrdersLastMonth", use: getNUmberOfPaidOrdersHandler)
+    }
+    
+    func approvedOrder(_ req: Request) throws -> EventLoopFuture<Order> {
+  
+        let data = try req.content.decode(OrderApprovedData.self)
+
+        return Order.find(req.parameters.get("orderID"), on: req.db).unwrap(or: Abort(.notFound)).map { order in
+            order.paid = true
+            order.$client.get(on: req.db).map { cliente  in
+                do{
+                    try sendEmail(req, email: cliente.email, contentHTML: emailApproved(id: order.id?.uuidString ?? "", fechaEntrega: data.fechaEntrega))
+                }catch let error{
+                    print(error.localizedDescription)
+                }
+            }
+            order.update(on: req.db)
+            return order
+        }
     }
     
     func sendEmail(_ req: Request, email: String, contentHTML: String) throws -> EventLoopFuture<HTTPStatus> {
@@ -242,3 +261,7 @@ struct ResultSumTotal: Content{
     var totalSum : Float
 }
 
+
+struct OrderApprovedData: Content{
+    var fechaEntrega: String
+}
