@@ -80,15 +80,19 @@ struct AdministratorController: RouteCollection{
     func resetPasswordHandler(_ req: Request) throws -> EventLoopFuture<HTTPStatus> {
         guard let token = try req.parameters.get("token") else {return req.eventLoop.makeFailedFuture(Abort(.badRequest))}
            
-        return ResetPasswordToken.query(on: req.db)
+        let response = req.eventLoop.makePromise(of: HTTPStatus.self)
+        ResetPasswordToken.query(on: req.db)
           .filter(\.$token == token)
             .first().unwrap(or: Abort(.notFound))
             .flatMapThrowing({ token in
                 token.$user.get(on: req.db).map { admin in
-                    Abort.redirect(to: "http://localhost:3000/resetPassword?\token=\(token.id)")
+                    response.fail(Abort.redirect(to: "http://localhost:3000/resetPassword?token=\(token.id?.uuidString ?? "")"))
                     //token.delete(on: req.db)
                 }
-            }).transform(to: .ok)
+            })
+        
+        return response.futureResult
+        
 }
     
 
