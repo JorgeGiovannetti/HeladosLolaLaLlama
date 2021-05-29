@@ -14,7 +14,7 @@ struct AdministratorController: RouteCollection{
         let administratorsRoute = routes.grouped("api", "admin")
         administratorsRoute.post(use: createHandler)
         administratorsRoute.post("forgotPassword", use: forgottenPasswordPostHandler)
-        administratorsRoute.post("resetPassword",":token", use: resetPasswordHandler)
+        administratorsRoute.get("resetPassword",":token", use: resetPasswordHandler)
         administratorsRoute.post("newPassword", use: resetPasswordPostHandler)
         let basicAuthMiddleware = Administrator.authenticator()
         let basicAuthGroup = administratorsRoute.grouped(basicAuthMiddleware)
