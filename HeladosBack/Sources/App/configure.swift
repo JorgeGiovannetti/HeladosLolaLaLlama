@@ -59,6 +59,7 @@ public func configure(_ app: Application) throws {
     app.migrations.add(CreateTokenClient())
     app.migrations.add(CreateOrder())
     app.migrations.add(CreateOrderDetail())
+    app.migrations.add(CreateResetPasswordToken())
     try app.autoMigrate().wait()
         
     app.sendgrid.initialize()
