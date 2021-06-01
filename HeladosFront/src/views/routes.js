@@ -4,6 +4,8 @@ import Orders from "./admin/Orders";
 import OrderDetails from "./admin/OrderDetails";
 import ProductsAdmin from "./admin/ProductsAdmin";
 import ProductDetailsAdmin from "./admin/ProductDetailsAdmin";
+import NewProduct from "./admin/NewProduct";
+import ForgotPassword from "./admin/ForgotPassword";
 
 // General imports
 import Landing from "./general/Landing";
@@ -19,6 +21,7 @@ const protectedRoutes = [
   { path: "/admin/orders", component: Orders },
   { path: "/admin/orders/:id", component: OrderDetails },
   { path: "/admin/products", component: ProductsAdmin },
+  { path: "/admin/new-product", component: NewProduct },
   { path: "/admin/products/:id", component: ProductDetailsAdmin },
 ];
 
@@ -30,6 +33,7 @@ const routes = [
   { path: "/products/:id", component: ProductDetail },
   { path: "/cart", component: Cart },
   { path: "/checkout", component: Checkout },
+  { path: "/resetPassword", component: ForgotPassword },
 ];
 
 export { routes, protectedRoutes };

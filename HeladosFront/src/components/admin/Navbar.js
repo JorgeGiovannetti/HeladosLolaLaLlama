@@ -78,7 +78,7 @@ const Navbar = () => {
               ))}
             </HStack>
           </HStack>
-          <Flex alignItems={"center"}>
+          <Flex alignItems={"center"} mr={3}>
             <Menu>
               <MenuButton
                 as={Button}

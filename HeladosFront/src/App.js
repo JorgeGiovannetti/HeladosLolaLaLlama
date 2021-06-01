@@ -13,6 +13,7 @@ const App = () => {
 	return (
 		<Flex
 			minH={'100vh'}
+			w={'100%'}
 			align={'center'}
 			justify={'center'}
 			flexDirection={'column'}
