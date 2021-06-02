@@ -18,7 +18,7 @@ const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     setUser(null);
-    localStorage.removeItem('token');
+    localStorage.removeItem('lolaToken');
   };
 
   return (
