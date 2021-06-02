@@ -68,7 +68,6 @@ const ProductForm = ({ currProducto }) => {
 
     // Upload image if needed
 
-
     // Upload to server
 
     setIsUploading(false);
@@ -110,8 +109,8 @@ const ProductForm = ({ currProducto }) => {
           rounded={"lg"}
           bg={useColorModeValue("white", "gray.700")}
           boxShadow={"lg"}
+          w={"100%"}
           p={8}
-          minW={"lg"}
         >
           {formAlert && (
             <Box my={4}>
@@ -130,7 +129,6 @@ const ProductForm = ({ currProducto }) => {
           <Stack spacing={4}>
             <FormControl
               id="name"
-              isRequired
               isInvalid={!!errors?.name?.message}
               errortext={errors?.name?.message}
             >
@@ -146,7 +144,6 @@ const ProductForm = ({ currProducto }) => {
             </FormControl>
             <FormControl
               id="description"
-              isRequired
               isInvalid={!!errors?.description?.message}
               errortext={errors?.description?.message}
             >
@@ -165,7 +162,6 @@ const ProductForm = ({ currProducto }) => {
             <HStack>
               <FormControl
                 id="location"
-                isRequired
                 isInvalid={!!errors?.location?.message}
                 errortext={errors?.location?.message}
               >
@@ -183,7 +179,6 @@ const ProductForm = ({ currProducto }) => {
             <HStack>
               <FormControl
                 id="contactName"
-                isRequired
                 isInvalid={!!errors?.contactName?.message}
                 errortext={errors?.contactName?.message}
               >
@@ -192,7 +187,7 @@ const ProductForm = ({ currProducto }) => {
                   type="text"
                   defaultValue={currProducto?.contactName}
                   {...register("contactName", {
-                    required: "Ingresa el nombre de contacto del producto",
+                    required: "Ingresa el nombre del producto",
                   })}
                 />
                 <FormErrorMessage>
@@ -201,7 +196,6 @@ const ProductForm = ({ currProducto }) => {
               </FormControl>
               <FormControl
                 id="contactMail"
-                isRequired
                 isInvalid={!!errors?.contactMail?.message}
                 errortext={errors?.contactMail?.message}
               >
@@ -210,7 +204,7 @@ const ProductForm = ({ currProducto }) => {
                   type="email"
                   defaultValue={currProducto?.contactMail}
                   {...register("contactMail", {
-                    required: "Ingresa el correo de contacto del producto",
+                    required: "Ingresa el del producto",
                   })}
                 />
                 <FormErrorMessage>
