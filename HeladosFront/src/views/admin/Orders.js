@@ -122,7 +122,7 @@ const OrdersAdmin = () => {
 
   const productsRows = isLoading
     ? null
-    : orders.map(({ id, total, paid, client, dateOfOrder }, key) => {
+    : orders.sort((a, b) => new Date(b.dateOfOrder) - new Date(a.dateOfOrder)).map(({ id, total, paid, client, dateOfOrder }, key) => {
         const orderDate = new Date(dateOfOrder);
 
         return (
