@@ -91,13 +91,13 @@ struct OrderController: RouteCollection {
     func getAllOrdersFromLastMonthHandler(_ req: Request) throws -> EventLoopFuture<[Order]> {
         Order.query(on: req.db).with(\.$client).with(\.$orderDetails, { details in
             details.with(\.$product)
-        }).filter(\.$dateOfOrder > Date().addingTimeInterval(-15000)).all()
+        }).filter(\.$dateOfOrder > Date().getPreviousMonth() ?? Date()).all()
     }
     
     func getAllPaidOrdersFromLastMonthHandler(_ req: Request) throws -> EventLoopFuture<[Order]> {
         Order.query(on: req.db).with(\.$client).with(\.$orderDetails, { details in
             details.with(\.$product)
-        }).filter(\.$paid == true).filter(\.$dateOfOrder > Date().addingTimeInterval(-15000)).all()
+        }).filter(\.$paid == true).filter(\.$dateOfOrder > Date().getPreviousMonth() ?? Date()).all()
     }
     
     func getAllProfitsFromLastMonthHandler(_ req: Request) throws -> EventLoopFuture<ResultSumTotal> {
@@ -105,11 +105,11 @@ struct OrderController: RouteCollection {
     }
     
     func getNUmberOfOrdersHandler(_ req: Request) throws -> EventLoopFuture<Int> {
-        return Order.query(on: req.db).filter(\.$dateOfOrder > Date().addingTimeInterval(-15000)).count()
+        return Order.query(on: req.db).filter(\.$dateOfOrder > Date().getPreviousMonth() ?? Date()).count()
     }
     
     func getNUmberOfPaidOrdersHandler(_ req: Request) throws -> EventLoopFuture<Int> {
-        return Order.query(on: req.db).filter(\.$paid == true).filter(\.$dateOfOrder > Date().addingTimeInterval(-15000)).count()
+        return Order.query(on: req.db).filter(\.$paid == true).filter(\.$dateOfOrder > Date().getPreviousMonth() ?? Date()).count()
     }
     // P Q S
     func createHandler(_ req: Request) throws -> EventLoopFuture<Order> {
@@ -264,4 +264,14 @@ struct ResultSumTotal: Content{
 
 struct OrderApprovedData: Content{
     var fechaEntrega: String
+}
+
+extension Date {
+    func getNextMonth() -> Date? {
+        return Calendar.current.date(byAdding: .month, value: 1, to: self)
+    }
+
+    func getPreviousMonth() -> Date? {
+        return Calendar.current.date(byAdding: .month, value: -1, to: self)
+    }
 }
