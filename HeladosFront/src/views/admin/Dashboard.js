@@ -29,8 +29,8 @@ const Dashboard = () => {
     <>
       <Navbar />
       <Box
-        mt={20}
-        p={"20"}
+        mt={16}
+        p={"10"}
         w={"100%"}
         flexDirection={"column"}
         justifyContent={"center"}
@@ -62,8 +62,8 @@ const Dashboard = () => {
                 borderColor={"purple.400"}
                 rounded={"lg"}
               >
-                <StatNumber>{data.numberPaidOrdersLastMonth ?? 0}</StatNumber>
                 <StatLabel>Órdenes pagadas</StatLabel>
+                <StatNumber>{data.numberPaidOrdersLastMonth ?? 0}</StatNumber>
                 <StatHelpText>en los últimos 30 días</StatHelpText>
               </Stat>
           </Stack>
