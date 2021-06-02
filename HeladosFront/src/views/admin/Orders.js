@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Spinner,
   Table,
@@ -9,22 +9,105 @@ import {
   Td,
   Tag,
   Button,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverArrow,
-  PopoverCloseButton,
-  PopoverBody,
-  PopoverFooter,
-  ButtonGroup,
-  PopoverHeader,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  FormControl,
+  FormLabel,
+  ModalFooter,
+  useDisclosure,
+  CloseButton,
+  AlertIcon,
+  Alert,
+  AlertDescription
 } from "@chakra-ui/react";
 import Navbar from "../../components/admin/Navbar";
 import { Box, Center, Heading, Stack } from "@chakra-ui/layout";
 import useOrders from "../../utils/hooks/useOrders";
+import { useForm } from "react-hook-form";
+import ChakraDatePicker from "../../components/admin/ChakraDatePicker";
+import axiosClient from "../../utils/providers/AxiosClient";
+import { useHistory } from "react-router";
 
-const ProductsAdmin = () => {
+const AprobaPagoModal = ({ id }) => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { handleSubmit } = useForm();
+  const [fechaEntrega, setFechaEntrega] = useState();
+  const [errorFecha, setErrorFecha] = useState(false);
+
+  const onSubmit = () => {
+    if (!fechaEntrega) {
+      setErrorFecha(true);
+    } else {
+      const fecha = fechaEntrega.toLocaleDateString("es-ES");
+      console.log("Aprobando pago de", id, "para", fecha);
+
+      axiosClient.patch(`/orders/${id}/approved`, { fechaEntrega: fecha });
+
+      close();
+    }
+  };
+
+  const close = () => {
+    setFechaEntrega(null);
+    setErrorFecha(false);
+    onClose();
+  };
+
+  return (
+    <>
+      <Button colorScheme="green" onClick={onOpen}>
+        Aprobar pago
+      </Button>
+
+      <Modal isOpen={isOpen} onClose={close}>
+        <ModalOverlay />
+        <ModalContent>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <ModalHeader>Aprobar pago</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <FormControl>
+                <FormLabel>Fecha de entrega</FormLabel>
+                <ChakraDatePicker
+                  selectedDate={fechaEntrega}
+                  onChange={(date) => setFechaEntrega(date)}
+                />
+              </FormControl>
+              {errorFecha && (
+                <Alert status="error" mt={4}>
+                  <AlertIcon />
+                  <AlertDescription>
+                    Introducir fecha de entrega
+                  </AlertDescription>
+                  <CloseButton
+                    onClick={() => setErrorFecha(false)}
+                    position="absolute"
+                    right="8px"
+                    top="8px"
+                  />
+                </Alert>
+              )}
+            </ModalBody>
+            <ModalFooter>
+              <Button type={"submit"} colorScheme="blue" mr={3}>
+                Save
+              </Button>
+              <Button onClick={close}>Cancel</Button>
+            </ModalFooter>
+          </form>
+        </ModalContent>
+      </Modal>
+    </>
+  );
+};
+
+const OrdersAdmin = () => {
   const { orders, isLoading, error } = useOrders();
+  const history = useHistory();
 
   if (error) {
     console.log("Error fetching products");
@@ -34,6 +117,8 @@ const ProductsAdmin = () => {
   if (orders) {
     console.log("got products", orders);
   }
+
+  // filtrar
 
   const productsRows = isLoading
     ? null
@@ -59,45 +144,9 @@ const ProductsAdmin = () => {
               </Tag>
             </Td>
             <Td>
-              <Stack direction={["column", "row", "row"]}>
-                <Button colorScheme="blue">Detalles</Button>
-                <Popover>
-                  {({ onClose }) => (
-                    <>
-                      <PopoverTrigger>
-                        <Button colorScheme="red">
-                          Eliminar
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent>
-                        <PopoverArrow />
-                        <PopoverCloseButton />
-                        <PopoverHeader>
-                          ¿Desea eliminar la órden seleccionada?
-                        </PopoverHeader>
-                        <PopoverBody>
-                          Los datos no podrán ser recuperados.
-                        </PopoverBody>
-                        <PopoverFooter d="flex" justifyContent="flex-end">
-                          <ButtonGroup size="sm">
-                            <Button variant="outline" onClick={onClose}>
-                              Cancelar
-                            </Button>
-                            <Button
-                              colorScheme="red"
-                              onClick={() => {
-                                console.log("deleting order with id", id);
-                                onClose();
-                              }}
-                            >
-                              Eliminar
-                            </Button>
-                          </ButtonGroup>
-                        </PopoverFooter>
-                      </PopoverContent>
-                    </>
-                  )}
-                </Popover>
+              <Stack direction={["column", "row", "row"]} justify={"flex-end"}>
+                {!paid && <AprobaPagoModal id={id} />}
+                <Button colorScheme="blue" onClick={() => history.push(`/admin/orders/${id}`)}>Detalles</Button>
               </Stack>
             </Td>
           </Tr>
@@ -142,4 +191,4 @@ const ProductsAdmin = () => {
   );
 };
 
-export default ProductsAdmin;
+export default OrdersAdmin;
