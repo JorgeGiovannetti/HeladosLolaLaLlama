@@ -15,7 +15,7 @@ const App = () => {
 			minH={'100vh'}
 			w={'100%'}
 			align={'center'}
-			justify={'center'}
+			// justify={'center'}
 			flexDirection={'column'}
 			bg={useColorModeValue('gray.50', 'gray.800')}
 		>
