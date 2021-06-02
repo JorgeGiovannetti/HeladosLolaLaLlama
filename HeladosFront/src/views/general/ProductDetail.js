@@ -22,9 +22,9 @@ import {
 	useToast,
 } from '@chakra-ui/react'
 import { Redirect } from 'react-router-dom'
-import { Stack } from '@chakra-ui/layout'
+import { Flex, Stack } from '@chakra-ui/layout'
 import Navbar from '../../components/general/Navbar'
-import useProduct from './hooks/useProduct'
+import useProduct from '../../utils/hooks/useProduct'
 import { HiShoppingCart } from 'react-icons/hi'
 import cartState from './recoil/cart'
 
@@ -99,7 +99,7 @@ const ProductDetail = () => {
 	}
 
 	return (
-		<>
+		<Flex minH={"100vh"} w={"100%"} direction={"column"} align={"center"} justify={"center"}>
 			{!isLoading && product === undefined ? (
 				<Redirect to='/products' />
 			) : (
@@ -248,7 +248,7 @@ const ProductDetail = () => {
 					</Box>
 				</>
 			)}
-		</>
+		</Flex>
 	)
 }
 

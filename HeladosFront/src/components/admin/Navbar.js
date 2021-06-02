@@ -16,9 +16,9 @@ import {
   Stack,
 } from "@chakra-ui/react";
 import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
-import { useAuth } from "../../providers/AuthProvider";
+import { useAuth } from "../../utils/providers/AuthProvider";
 
-const Links = ["Dashboard", "Products", "Orders"];
+const Links = [{to: '', name: "Dashboard"}, {to: 'products/', name: "Products"}, {to: 'orders', name: "Orders"}];
 
 const NavLink = ({ link, children }) => (
   <Link
@@ -50,7 +50,7 @@ const Navbar = () => {
   };
 
   return (
-    <Box position={"fixed"} top={"0"} left={"0"}>
+    <Box position={"fixed"} top={"0"} left={"0"} zIndex={1}>
       <Box
         bg={useColorModeValue("purple.400", "purple.900")}
         px={4}
@@ -71,14 +71,14 @@ const Navbar = () => {
               spacing={4}
               display={{ base: "none", md: "flex" }}
             >
-              {Links.map((link) => (
-                <NavLink key={link} link={link}>
-                  {link}
+              {Links.map((link, key) => (
+                <NavLink key={key} link={link.to}>
+                  {link.name}
                 </NavLink>
               ))}
             </HStack>
           </HStack>
-          <Flex alignItems={"center"}>
+          <Flex alignItems={"center"} mr={3}>
             <Menu>
               <MenuButton
                 as={Button}
@@ -98,8 +98,8 @@ const Navbar = () => {
         {isOpen ? (
           <Box pb={4}>
             <Stack as={"nav"} spacing={4}>
-              {Links.map((link) => (
-                <NavLink key={link}>{link}</NavLink>
+              {Links.map((link, key) => (
+                <NavLink key={key} link={link.to}>{link.name}</NavLink>
               ))}
             </Stack>
           </Box>

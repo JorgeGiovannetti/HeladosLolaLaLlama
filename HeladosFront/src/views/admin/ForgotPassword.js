@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import {
   Box,
@@ -11,7 +11,6 @@ import {
   InputGroup,
   InputRightElement,
   AlertDescription,
-  Link,
   CloseButton,
   Input,
   Stack,
@@ -21,14 +20,21 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
-import { useAuth } from "../../utils/providers/AuthProvider";
 
-const Login = () => {
-  const { user, login } = useAuth();
+const ForgotPassword = () => {
+  const search = useLocation().search;
+  const token = new URLSearchParams(search).get("token");
+
+  console.log("got token", token);
+
   const [authAlert, setAuthAlert] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  
   const handlePasswordVisibility = () => setShowPassword(!showPassword);
+  const handleConfirmPasswordVisibility = () => setShowConfirmPassword(!showConfirmPassword);
+  
   const history = useHistory();
 
   const {
@@ -41,12 +47,17 @@ const Login = () => {
     setIsLoading(true);
     setShowPassword(false);
 
-    const { username, password } = values;
+    const { password, confirmpassword } = values;
     try {
-      await login(username, password);
-      history.push("/admin");
-    }
-    catch {
+      console.log("got password", password, confirmpassword);
+      //   await login(username, password);
+      //   history.push("/login");
+      setAuthAlert({
+        status: "success",
+        message: "Usuario o contraseña inválida",
+      });
+      setIsLoading(false);
+    } catch {
       setIsLoading(false);
       setAuthAlert({
         status: "error",
@@ -54,10 +65,6 @@ const Login = () => {
       });
     }
   };
-
-  if (user) {
-    history.push("/admin");
-  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -69,7 +76,7 @@ const Login = () => {
         py={12}
         px={6}
       >
-        <Heading fontSize={"4xl"}>Iniciar sesión</Heading>
+        <Heading fontSize={"4xl"}>Restablecer contraseña</Heading>
         <Box
           rounded={"lg"}
           bg={useColorModeValue("white", "gray.700")}
@@ -93,29 +100,16 @@ const Login = () => {
           )}
           <Stack spacing={4}>
             <FormControl
-              id="username"
-              isInvalid={!!errors?.username?.message}
-              errortext={errors?.username?.message}
-            >
-              <FormLabel>Usuario</FormLabel>
-              <Input
-                {...register("username", {
-                  required: "Ingresa el nombre de usuario",
-                })}
-              />
-              <FormErrorMessage>{errors?.username?.message}</FormErrorMessage>
-            </FormControl>
-            <FormControl
               id="password"
               isInvalid={!!errors?.password?.message}
               errortext={errors?.password?.message}
             >
-              <FormLabel>Contraseña</FormLabel>
+              <FormLabel>Nueva contraseña</FormLabel>
               <InputGroup>
                 <Input
                   type={showPassword ? "text" : "password"}
                   {...register("password", {
-                    required: "Ingresa la contraseña",
+                    required: "Ingresa la nueva contraseña",
                   })}
                 />
                 <InputRightElement width="3rem">
@@ -123,6 +117,7 @@ const Login = () => {
                     h="1.5rem"
                     size="sm"
                     onClick={handlePasswordVisibility}
+                    type={"button"}
                   >
                     {showPassword ? <ViewOffIcon /> : <ViewIcon />}
                   </Button>
@@ -130,19 +125,33 @@ const Login = () => {
               </InputGroup>
               <FormErrorMessage>{errors?.password?.message}</FormErrorMessage>
             </FormControl>
+            <FormControl
+              id="confirmpassword"
+              isInvalid={!!errors?.confirmpassword?.message}
+              errortext={errors?.confirmpassword?.message}
+            >
+              <FormLabel>Confirma contraseña</FormLabel>
+              <InputGroup>
+                <Input
+                  type={showConfirmPassword ? "text" : "password"}
+                  {...register("confirmpassword", {
+                    required: "Confirma la nueva contraseña",
+                  })}
+                />
+                <InputRightElement width="3rem">
+                  <Button
+                    h="1.5rem"
+                    size="sm"
+                    onClick={handleConfirmPasswordVisibility}
+                    type={"button"}
+                  >
+                    {showConfirmPassword ? <ViewOffIcon /> : <ViewIcon />}
+                  </Button>
+                </InputRightElement>
+              </InputGroup>
+              <FormErrorMessage>{errors?.confirmpassword?.message}</FormErrorMessage>
+            </FormControl>
             <Stack spacing={10}>
-              <Stack
-                direction={{ base: "column", sm: "row" }}
-                align={"start"}
-                justify={"space-between"}
-              >
-                <Link
-                  color={"purple.400"}
-                  onClick={() => history.push("/forgot-password")}
-                >
-                  ¿Olvidaste la contraseña?
-                </Link>
-              </Stack>
               <Button
                 bg={"purple.400"}
                 color={"white"}
@@ -154,7 +163,7 @@ const Login = () => {
                 {isLoading ? (
                   <CircularProgress isIndeterminate size="24px" color="teal" />
                 ) : (
-                  "Ingresar"
+                  "Restablecer contraseña"
                 )}
               </Button>
             </Stack>
@@ -165,4 +174,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default ForgotPassword;

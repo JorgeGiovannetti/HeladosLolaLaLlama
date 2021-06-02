@@ -13,18 +13,18 @@ const App = () => {
 	return (
 		<Flex
 			minH={'100vh'}
+			w={'100%'}
 			align={'center'}
-			justify={'center'}
 			flexDirection={'column'}
 			bg={useColorModeValue('gray.50', 'gray.800')}
 		>
 			<Router>
 				<Switch>
-					{routes.map((route) => (
-						<Route exact path={route.path} component={route.component} />
+					{routes.map((route, key) => (
+						<Route key={key} exact path={route.path} component={route.component} />
 					))}
-					{protectedRoutes.map((route) => (
-						<PrivateRoute exact path={route.path} component={route.component} />
+					{protectedRoutes.map((route, key) => (
+						<PrivateRoute key={key} exact path={route.path} component={route.component} />
 					))}
 					<Redirect to='/' />
 				</Switch>
