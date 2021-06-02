@@ -157,8 +157,8 @@ const OrdersAdmin = () => {
     <>
       <Navbar />
       <Box
-        mt={20}
-        p={"20"}
+        mt={16}
+        p={"10"}
         w={"100%"}
         flexDirection={"column"}
         justifyContent={"center"}
