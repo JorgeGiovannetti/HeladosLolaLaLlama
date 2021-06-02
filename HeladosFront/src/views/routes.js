@@ -3,7 +3,7 @@ import Dashboard from "./admin/Dashboard";
 import Orders from "./admin/Orders";
 import OrderDetails from "./admin/OrderDetails";
 import ProductsAdmin from "./admin/ProductsAdmin";
-import ProductDetailsAdmin from "./admin/ProductDetailsAdmin";
+import EditProduct from "./admin/EditProduct";
 import NewProduct from "./admin/NewProduct";
 import ForgotPassword from "./admin/ForgotPassword";
 
@@ -21,8 +21,8 @@ const protectedRoutes = [
   { path: "/admin/orders", component: Orders },
   { path: "/admin/orders/:id", component: OrderDetails },
   { path: "/admin/products", component: ProductsAdmin },
-  { path: "/admin/new-product", component: NewProduct },
-  { path: "/admin/products/:id", component: ProductDetailsAdmin },
+  { path: "/admin/products/new-product", component: NewProduct },
+  { path: "/admin/products/:id", component: EditProduct },
 ];
 
 // General routes
