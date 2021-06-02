@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useHistory } from 'react-router-dom'
 import {
 	Box,
 	Center,
@@ -25,8 +26,10 @@ import {
 	ModalHeader,
 	ModalFooter,
 	ModalBody,
-	ModalCloseButton,
 	useDisclosure,
+	AlertTitle,
+	AlertDescription,
+	CloseButton,
 } from '@chakra-ui/react'
 import Navbar from '../../components/general/Navbar'
 import { useSetRecoilState, useRecoilState } from 'recoil'
@@ -34,23 +37,91 @@ import cartState from './recoil/cart'
 import { HiPhone, HiOutlineMail } from 'react-icons/hi'
 
 const Checkout = () => {
+	let history = useHistory()
 	const cart = useRecoilState(cartState)
 
 	const setCart = useSetRecoilState(cartState)
 
-	let total = 0
+	const [errorSubmitting, setErrorSubmiting] = useState(false)
+	const [orderResponse, setOrderResponse] = useState('')
+	const [specification, setSpecification] = useState('')
+	const [name, setName] = useState('')
+	const [lastName, setLastName] = useState('')
+	const [phoneNumber, setPhoneNumber] = useState('')
+	const [email, setEmail] = useState('')
+	const [address, setAddress] = useState('')
+	const [town, setTown] = useState('')
+	const [zipCode, setZipCode] = useState('')
 
-	const placeOrder = () => {
-		setCart([])
+	const { isOpen, onOpen, onClose } = useDisclosure()
+
+	const redirect = () => {
+		history.push('/')
 	}
 
-	// Validate functions
-	function validateName(value) {
-		let error
-		if (!value) {
-			error = 'Name is required'
+	const handleSubmit = async (event) => {
+		event.preventDefault()
+		const response = await placeOrder()
+		if (response.statusText === 'OK') {
+			setCart([])
+			onOpen()
+		} else {
+			setErrorSubmiting(true)
 		}
-		return error
+	}
+
+	let total = 0
+
+	const placeOrderCall = async (orderData) => {
+		const res = await fetch('https://lolalallama.herokuapp.com/api/orders', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(orderData),
+		})
+
+		await res
+			.json()
+			.then(async (res) => setOrderResponse(res))
+			.then(async (data) => {
+				console.log('Success creating order:', data)
+			})
+			.catch((error) => {
+				console.error('Error creating order:', error)
+				setOrderResponse(error)
+			})
+		return res
+	}
+
+	const placeOrder = async () => {
+		let products = ''
+		cart[0].forEach(
+			({ size, numberOfPints, id }) =>
+				(products +=
+					id.slice(0, -2) +
+					':' +
+					numberOfPints +
+					':' +
+					(size === 'sm' ? '250ml' : size === 'md' ? '500ml' : '1L') +
+					',')
+		)
+
+		const orderDetails = {
+			products: products.slice(0, -1), // remove last comma
+			shippingAddress: address + ', ' + town + ', ' + zipCode,
+			specification: '',
+			clientName: name + ' ' + lastName,
+			clientPhone: phoneNumber,
+			clientAddress: address + ', ' + town + ', ' + zipCode,
+			clientEmail: email,
+		}
+		return await placeOrderCall(orderDetails)
+	}
+
+	let handleTextareaChange = (e) => {
+		let inputValue = e.target.value
+		setSpecification(inputValue)
 	}
 
 	const products = cart[0].map(
@@ -102,29 +173,33 @@ const Checkout = () => {
 		}
 	)
 
-	const [name, setName] = useState('')
-	const [lastName, setLastName] = useState('')
-	const [phoneNumber, setPhoneNumber] = useState('')
-	const [email, setEmail] = useState('')
-	const [address, setAddress] = useState('')
-	const [town, setTown] = useState('')
-	const [zipCode, setZipCode] = useState('')
-
-	const { isOpen, onOpen, onClose } = useDisclosure()
-
-	const handleSubmit = (event) => {
-		event.preventDefault()
-		onOpen()
-	}
-
 	return (
 		<>
 			<Navbar />
 			{cart[0].length === 0 ? (
 				<Center>
-					<Heading as='h3' size='lg'>
-						Tu carrito está vacio...
-					</Heading>
+					{isOpen ? (
+						<Modal isOpen={isOpen} onClose={onClose}>
+							<ModalOverlay />
+							<ModalContent>
+								<ModalHeader>¡Tu orden fue registrada!</ModalHeader>
+								<ModalBody>
+									Gracias por realizar un pedido de Lola La Llama. Revisa tu
+									correo electrónico donde te llegará una confirmación de tu
+									pedido.
+								</ModalBody>
+								<ModalFooter>
+									<Button colorScheme='blue' mr={3} onClick={redirect}>
+										Cerrar
+									</Button>
+								</ModalFooter>
+							</ModalContent>
+						</Modal>
+					) : (
+						<Heading as='h3' size='lg'>
+							Tu carrito está vacio...
+						</Heading>
+					)}
 				</Center>
 			) : (
 				<Box w='100%'>
@@ -143,7 +218,11 @@ const Checkout = () => {
 							<Text fontSize='xl' mb={4}>
 								Especificaciones
 							</Text>
-							<Textarea placeholder='Agrega aquí cualquier especificación adicional...' />
+							<Textarea
+								placeholder='Agrega aquí cualquier especificación adicional...'
+								value={specification}
+								onChange={handleTextareaChange}
+							/>
 							<Divider my={8} />
 							<Text fontSize='xl' mb={4}>
 								Detalles de entrega
@@ -337,22 +416,14 @@ const Checkout = () => {
 							</Box>
 						</Stack>
 					</Stack>
-					<Modal isOpen={isOpen} onClose={onClose}>
-						<ModalOverlay />
-						<ModalContent>
-							<ModalHeader>¡Tu orden fue registrada!</ModalHeader>
-							<ModalBody>
-								Gracias por realizar un pedido de Lola La Llama. Revisa tu
-								correo electrónico donde te llegará una confirmación de tu
-								pedido.
-							</ModalBody>
-							<ModalFooter>
-								<Button colorScheme='blue' mr={3} onClick={onClose}>
-									Cerrar
-								</Button>
-							</ModalFooter>
-						</ModalContent>
-					</Modal>
+					{errorSubmitting ? (
+						<Alert status='error'>
+							<AlertIcon />
+							<AlertTitle mr={2}>¡Ocurrió un error!</AlertTitle>
+							<AlertDescription>Vuelve a intentar.</AlertDescription>
+							<CloseButton position='absolute' right='8px' top='8px' />
+						</Alert>
+					) : null}
 				</Box>
 			)}
 		</>
