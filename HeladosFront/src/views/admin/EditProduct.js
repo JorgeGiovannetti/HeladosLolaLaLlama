@@ -36,7 +36,7 @@ const EditProduct = () => {
             Regresar a productos
           </Link>
         </Box>
-        <ProductForm />
+        <ProductForm currProducto={product} />
       </Box>
     </>
   );
