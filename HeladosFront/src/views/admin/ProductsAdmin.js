@@ -11,23 +11,73 @@ import {
   Icon,
   Tag,
   Button,
-  Popover,
-  PopoverTrigger,
-  PopoverArrow,
-  PopoverCloseButton,
-  PopoverHeader,
-  PopoverBody,
-  PopoverFooter,
-  ButtonGroup,
-  PopoverContent,
+  AlertDialogOverlay,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialog,
 } from "@chakra-ui/react";
 import Navbar from "../../components/admin/Navbar";
 import { Box, Center, Heading, Stack } from "@chakra-ui/layout";
 import useProducts from "../../utils/hooks/useProducts";
 import { HiCurrencyDollar } from "react-icons/hi";
+import { useHistory } from "react-router";
+import axiosClient from "../../utils/providers/AxiosClient";
+
+const AlertaEliminar = ({ id }) => {
+  const [isOpen, setIsOpen] = React.useState(false);
+  const onClose = () => setIsOpen(false);
+  const cancelRef = React.useRef();
+
+  const eliminarProducto = () => {
+    console.log("deleting product with id", id);
+    
+    axiosClient.delete(`/helados/${id}`);
+
+    onClose();
+  }
+
+  return (
+    <>
+      <Button colorScheme="red" onClick={() => setIsOpen(true)}>
+        Eliminar
+      </Button>
+
+      <AlertDialog
+        isOpen={isOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={onClose}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              Delete Customer
+            </AlertDialogHeader>
+
+            <AlertDialogBody>
+            ¿Desea eliminar el producto seleccionado? <br/>
+            Los datos no podrán ser recuperados.
+            </AlertDialogBody>
+
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={onClose}>
+                Cancelar
+              </Button>
+              <Button colorScheme="red" onClick={eliminarProducto} ml={3}>
+                Eliminar
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
+    </>
+  );
+};
 
 const ProductsAdmin = () => {
   const { products, isLoading, error } = useProducts();
+  const history = useHistory();
 
   if (error) {
     console.log("Error fetching products");
@@ -94,42 +144,8 @@ const ProductsAdmin = () => {
           </Td>
           <Td>
             <Stack direction={["column", "row", "row"]}>
-              <Button colorScheme="blue">Editar</Button>
-              <Popover>
-                {({ onClose }) => (
-                  <>
-                    <PopoverTrigger>
-                      <Button colorScheme="red">Eliminar</Button>
-                    </PopoverTrigger>
-                    <PopoverContent>
-                      <PopoverArrow />
-                      <PopoverCloseButton />
-                      <PopoverHeader>
-                        ¿Desea eliminar el producto seleccionado?
-                      </PopoverHeader>
-                      <PopoverBody>
-                        Los datos no podrán ser recuperados.
-                      </PopoverBody>
-                      <PopoverFooter d="flex" justifyContent="flex-end">
-                        <ButtonGroup size="sm">
-                          <Button variant="outline" onClick={onClose}>
-                            Cancelar
-                          </Button>
-                          <Button
-                            colorScheme="red"
-                            onClick={() => {
-                              console.log("deleting product with id", id);
-                              onClose();
-                            }}
-                          >
-                            Eliminar
-                          </Button>
-                        </ButtonGroup>
-                      </PopoverFooter>
-                    </PopoverContent>
-                  </>
-                )}
-              </Popover>
+              <Button colorScheme="blue" onClick={() => history.push(`/admin/products/${id}`)}>Editar</Button>
+              <AlertaEliminar id={id}/>
             </Stack>
           </Td>
         </Tr>
@@ -147,7 +163,7 @@ const ProductsAdmin = () => {
       >
         <Heading mb={5}>Productos</Heading>
         <Stack direction="row" mb={"3"}>
-          <Button colorScheme="green">Nuevo producto</Button>
+          <Button colorScheme="green" onClick={() => history.push('/admin/products/new-product')}>Nuevo producto</Button>
         </Stack>
         {isLoading ? (
           <Center>
