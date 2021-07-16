@@ -138,7 +138,7 @@ const Login = () => {
               >
                 <Link
                   color={"purple.400"}
-                  onClick={() => history.push("/forgot-password")}
+                  onClick={() => history.push("/resetPassword")}
                 >
                   ¿Olvidaste la contraseña?
                 </Link>

@@ -1,5 +1,9 @@
 import React, { useState } from "react";
-import { useHistory, useLocation } from "react-router-dom";
+import {
+  useHistory,
+  useLocation,
+  Link as ReactRouterLink
+} from "react-router-dom";
 import { useForm } from "react-hook-form";
 import {
   Box,
@@ -18,8 +22,9 @@ import {
   CircularProgress,
   Heading,
   useColorModeValue,
+  Link,
 } from "@chakra-ui/react";
-import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+import { ArrowBackIcon, ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 
 const ForgotPassword = () => {
   const search = useLocation().search;
@@ -31,10 +36,11 @@ const ForgotPassword = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  
+
   const handlePasswordVisibility = () => setShowPassword(!showPassword);
-  const handleConfirmPasswordVisibility = () => setShowConfirmPassword(!showConfirmPassword);
-  
+  const handleConfirmPasswordVisibility = () =>
+    setShowConfirmPassword(!showConfirmPassword);
+
   const history = useHistory();
 
   const {
@@ -84,6 +90,18 @@ const ForgotPassword = () => {
           p={8}
           minW={"lg"}
         >
+          <Box mb={3}>
+            <Link
+              as={ReactRouterLink}
+              to={"/admin/login"}
+              _hover={{
+                color: useColorModeValue("purple.400", "purple.200"),
+              }}
+            >
+              <ArrowBackIcon />
+              Login
+            </Link>
+          </Box>
           {authAlert && (
             <Box my={4}>
               <Alert status={authAlert.status} borderRadius={4}>
@@ -117,7 +135,6 @@ const ForgotPassword = () => {
                     h="1.5rem"
                     size="sm"
                     onClick={handlePasswordVisibility}
-                    type={"button"}
                   >
                     {showPassword ? <ViewOffIcon /> : <ViewIcon />}
                   </Button>
@@ -143,13 +160,14 @@ const ForgotPassword = () => {
                     h="1.5rem"
                     size="sm"
                     onClick={handleConfirmPasswordVisibility}
-                    type={"button"}
                   >
                     {showConfirmPassword ? <ViewOffIcon /> : <ViewIcon />}
                   </Button>
                 </InputRightElement>
               </InputGroup>
-              <FormErrorMessage>{errors?.confirmpassword?.message}</FormErrorMessage>
+              <FormErrorMessage>
+                {errors?.confirmpassword?.message}
+              </FormErrorMessage>
             </FormControl>
             <Stack spacing={10}>
               <Button

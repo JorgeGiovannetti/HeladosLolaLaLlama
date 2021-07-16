@@ -26,6 +26,7 @@ import {
 import Dropzone from "react-dropzone";
 import { formatBytes } from "./formatBytes";
 import "./dropzone.css";
+import axiosClient from "../../utils/providers/AxiosClient";
 
 const ProductForm = ({ currProducto }) => {
   const [formAlert, setFormAlert] = useState();
@@ -33,7 +34,7 @@ const ProductForm = ({ currProducto }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [productImage, setProductImage] = useState(
-    currProducto?.image ? [currProducto.image] : []
+    currProducto?.product?.fotos ? [currProducto?.product?.fotos[0]?.foto] : []
   );
   const [imageError, setImageError] = useState({});
 
@@ -48,12 +49,14 @@ const ProductForm = ({ currProducto }) => {
 
   useEffect(() => {
     if (currProducto) {
-      setProductImage(currProducto?.image ? [currProducto.image] : []);
-      setValue("name", currProducto.name);
-      setValue("description", currProducto.description);
-      setValue("location", currProducto.location);
-      setValue("contactName", currProducto.contactName);
-      setValue("contactMail", currProducto.contactMail);
+      setProductImage(
+        currProducto?.product?.fotos[0]?.foto
+          ? [currProducto?.product?.fotos[0]?.foto]
+          : []
+      );
+      setValue("name", currProducto?.product?.name);
+      setValue("description", currProducto?.product?.description);
+      setValue("flavor", currProducto?.flavor);
     }
   }, [currProducto, setValue]);
 
@@ -61,14 +64,74 @@ const ProductForm = ({ currProducto }) => {
     const producto = {
       name: values.name,
       description: values.description,
-      location: values.location,
-      contactName: values.contactName,
-      contactMail: values.contactMail,
+      flavor: values.flavor,
     };
 
-    // Upload image if needed
+    console.log("producto", producto);
+    console.log("image", productImage);
 
     // Upload to server
+    const isUpload = !!!currProducto?.id;
+    let productID;
+
+    if (isUpload) {
+      const res = await axiosClient.post("/helados", producto);
+      console.log("respuesta upload", res);
+      productID = res.data.id;
+    } else {
+      const res = await axiosClient.put(
+        `/helados/${currProducto.id}`,
+        producto
+      );
+      console.log("respuesta edit", res);
+      productID = currProducto.id;
+    }
+
+    // Upload image if needed
+    const willUploadImage = typeof values?.image !== "string";
+
+    console.log("will upload image", willUploadImage);
+
+    if (willUploadImage) {
+      console.log("uploading image", values.image);
+
+      const uploadTask = storage
+        .ref()
+        .child(`fotosHelados/${values.flavor}`)
+        .put(values.image);
+
+      setUploadProgress(0);
+      setIsUploading(true);
+
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          setUploadProgress(
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+          );
+        },
+        (error) => {
+          throw error;
+        },
+        () => {
+          uploadTask.snapshot.ref.getDownloadURL().then(async (downloadURL) => {
+            console.log(
+              "uploading product with id",
+              productID,
+              "image hosted on",
+              downloadURL
+            );
+
+            const res = await axiosClient.post("/fotoProducto", {
+              foto: downloadURL,
+              product: productID,
+            });
+            console.log("res image upload", res);
+          });
+        }
+      );
+      setIsUploading(false);
+    }
 
     setIsUploading(false);
   };
@@ -90,7 +153,7 @@ const ProductForm = ({ currProducto }) => {
           message: "Producto registrado!",
         });
         setTimeout(() => {
-          history.push("/productos");
+          history.push("/admin/products");
         }, 2000);
       })
       .catch((_) => {
@@ -132,10 +195,10 @@ const ProductForm = ({ currProducto }) => {
               isInvalid={!!errors?.name?.message}
               errortext={errors?.name?.message}
             >
-              <FormLabel>Nombre de producto</FormLabel>
+              <FormLabel>Nombre del producto</FormLabel>
               <Input
                 type="text"
-                defaultValue={currProducto?.name}
+                defaultValue={currProducto?.product?.name}
                 {...register("name", {
                   required: "Ingresa el nombre del producto",
                 })}
@@ -147,7 +210,7 @@ const ProductForm = ({ currProducto }) => {
               isInvalid={!!errors?.description?.message}
               errortext={errors?.description?.message}
             >
-              <FormLabel>Descripción de producto</FormLabel>
+              <FormLabel>Descripción del producto</FormLabel>
               <Textarea
                 type="text"
                 defaultValue={currProducto?.description}
@@ -161,55 +224,19 @@ const ProductForm = ({ currProducto }) => {
             </FormControl>
             <HStack>
               <FormControl
-                id="location"
-                isInvalid={!!errors?.location?.message}
-                errortext={errors?.location?.message}
+                id="flavor"
+                isInvalid={!!errors?.flavor?.message}
+                errortext={errors?.flavor?.message}
               >
-                <FormLabel>Ubicación de producto</FormLabel>
+                <FormLabel>Sabor del producto</FormLabel>
                 <Input
                   type="text"
-                  defaultValue={currProducto?.location}
-                  {...register("location", {
-                    required: "Ingresa la ubicación del producto",
+                  defaultValue={currProducto?.flavor}
+                  {...register("flavor", {
+                    required: "Ingresa el sabor del producto",
                   })}
                 />
-                <FormErrorMessage>{errors?.location?.message}</FormErrorMessage>
-              </FormControl>
-            </HStack>
-            <HStack>
-              <FormControl
-                id="contactName"
-                isInvalid={!!errors?.contactName?.message}
-                errortext={errors?.contactName?.message}
-              >
-                <FormLabel>Nombre de contacto</FormLabel>
-                <Input
-                  type="text"
-                  defaultValue={currProducto?.contactName}
-                  {...register("contactName", {
-                    required: "Ingresa el nombre del producto",
-                  })}
-                />
-                <FormErrorMessage>
-                  {errors?.contactName?.message}
-                </FormErrorMessage>
-              </FormControl>
-              <FormControl
-                id="contactMail"
-                isInvalid={!!errors?.contactMail?.message}
-                errortext={errors?.contactMail?.message}
-              >
-                <FormLabel>Correo de contacto</FormLabel>
-                <Input
-                  type="email"
-                  defaultValue={currProducto?.contactMail}
-                  {...register("contactMail", {
-                    required: "Ingresa el del producto",
-                  })}
-                />
-                <FormErrorMessage>
-                  {errors?.contactMail?.message}
-                </FormErrorMessage>
+                <FormErrorMessage>{errors?.flavor?.message}</FormErrorMessage>
               </FormControl>
             </HStack>
             <FormControl
@@ -272,7 +299,7 @@ const ProductForm = ({ currProducto }) => {
                     key={index}
                   >
                     <HStack>
-                      {file.name ? (
+                      {file?.name ? (
                         <>
                           <Image h={"65px"} mr={"2"} src={file.preview} />
                           <Text>{file.name}</Text>

@@ -30,9 +30,7 @@ const AlertaEliminar = ({ id }) => {
   const onClose = () => setIsOpen(false);
   const cancelRef = React.useRef();
 
-  const eliminarProducto = () => {
-    console.log("deleting product with id", id);
-    
+  const eliminarProducto = () => {   
     axiosClient.delete(`/helados/${id}`);
 
     onClose();
@@ -94,7 +92,7 @@ const ProductsAdmin = () => {
         <Tr key={key}>
           <Td>
             <Image
-              src={product.fotos[0].foto}
+              src={product?.fotos[product?.fotos.length - 1]?.foto}
               h={"80px"}
               w={"80px"}
               alt={"Helado de " + flavor}
@@ -155,8 +153,8 @@ const ProductsAdmin = () => {
     <>
       <Navbar />
       <Box
-        mt={20}
-        p={"20"}
+        mt={16}
+        p={"10"}
         w={"100%"}
         flexDirection={"column"}
         justifyContent={"center"}

@@ -9,7 +9,7 @@ const NewProduct = () => {
   return (
     <>
       <Navbar />
-      <Box p={3} mt={10} w={"100%"}>
+      <Box p={"10"} mt={16} w={"100%"}>
         <Heading mb={3}>Nuevo Producto</Heading>
         <Box mb={3}>
           <Link
