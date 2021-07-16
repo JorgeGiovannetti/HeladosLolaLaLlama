@@ -22,6 +22,11 @@ import {
   FormErrorMessage,
   CircularProgress,
   useColorModeValue,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
 } from "@chakra-ui/react";
 import Dropzone from "react-dropzone";
 import { formatBytes } from "./formatBytes";
@@ -57,6 +62,15 @@ const ProductForm = ({ currProducto }) => {
       setValue("name", currProducto?.product?.name);
       setValue("description", currProducto?.product?.description);
       setValue("flavor", currProducto?.flavor);
+      setValue("priceSmall", currProducto?.product?.precios?.filter((x) => {
+        return x.size == "250ml"
+      })[0].price);
+      setValue("priceMedium", currProducto?.product?.precios?.filter((x) => {
+        return x.size == "500ml"
+      })[0].price);
+      setValue("priceBig", currProducto?.product?.precios?.filter((x) => {
+        return x.size == "1L"
+      })[0].price);
     }
   }, [currProducto, setValue]);
 
@@ -78,6 +92,31 @@ const ProductForm = ({ currProducto }) => {
       const res = await axiosClient.post("/helados", producto);
       console.log("respuesta upload", res);
       productID = res.data.id;
+      console.log(productID);
+      const priceSmall = {
+        size: "250ml",
+        price: parseFloat(values.priceSmall),
+        product: productID
+      };
+  
+      const priceMedium = {
+        size: "500ml",
+        price: parseFloat(values.priceMedium),
+        product: productID
+      };
+  
+      const priceBig = {
+        size: "1L",
+        price: parseFloat(values.priceBig),
+        product: productID
+      };
+
+      const prices = [priceSmall, priceMedium, priceBig];
+      console.log(prices);
+      for(var j = 0; j < 3; j++){
+        const res = await axiosClient.post("/precioProducto", prices[j]);
+        console.log(prices[j] + " uploaded", res);
+      }
     } else {
       const res = await axiosClient.put(
         `/helados/${currProducto.id}`,
@@ -237,6 +276,66 @@ const ProductForm = ({ currProducto }) => {
                   })}
                 />
                 <FormErrorMessage>{errors?.flavor?.message}</FormErrorMessage>
+              </FormControl>
+            </HStack>
+            <HStack spacing={10} hidden={!!currProducto?.id}>
+              <FormControl
+                id="priceSmall"
+                isInvalid={!!errors?.priceSmall?.message}
+                errortext={errors?.priceSmall?.message}
+              >
+                <FormLabel>Precio del producto pequeño</FormLabel>
+                <NumberInput defaultValue={100} precision={2} step={5}
+                    >
+                      <NumberInputField  {...register("priceSmall", {
+                      required: "Ingresa el precio por el tamaño pequeño",
+                    })}/>
+                      <NumberInputStepper>
+                        <NumberIncrementStepper />
+                        <NumberDecrementStepper />
+                      </NumberInputStepper>
+                    </NumberInput>
+                <FormErrorMessage>{errors?.priceSmall?.message}</FormErrorMessage>
+              </FormControl>
+
+              <FormControl
+                id="priceMedium"
+                isInvalid={!!errors?.priceMedium?.message}
+                errortext={errors?.priceMedium?.message}
+              >
+                <FormLabel>Precio del producto mediano</FormLabel>
+                <NumberInput defaultValue={200}
+                  precision={2} step={5}
+                    >
+                      <NumberInputField  {...register("priceMedium", {
+                      required: "Ingresa el precio por el tamaño mediano",
+                    })}/>
+                      <NumberInputStepper>
+                        <NumberIncrementStepper />
+                        <NumberDecrementStepper />
+                      </NumberInputStepper>
+                    </NumberInput>
+                <FormErrorMessage>{errors?.priceMedium?.message}</FormErrorMessage>
+              </FormControl>
+
+              <FormControl
+                id="priceBig"
+                isInvalid={!!errors?.priceBig?.message}
+                errortext={errors?.priceBig?.message}
+              >
+                <FormLabel>Precio del producto grande</FormLabel>
+                <NumberInput defaultValue={300}
+                  precision={2} step={5}
+                    >
+                      <NumberInputField  {...register("priceBig", {
+                      required: "Ingresa el precio por el tamaño grande",
+                    })}/>
+                      <NumberInputStepper>
+                        <NumberIncrementStepper />
+                        <NumberDecrementStepper />
+                      </NumberInputStepper>
+                    </NumberInput>
+                <FormErrorMessage>{errors?.priceBig?.message}</FormErrorMessage>
               </FormControl>
             </HStack>
             <FormControl

@@ -141,8 +141,9 @@ const ProductsAdmin = () => {
             </Tag>
           </Td>
           <Td>
-            <Stack direction={["column", "row", "row"]}>
+            <Stack direction={["column", "row", "row", "row"]}>
               <Button colorScheme="blue" onClick={() => history.push(`/admin/products/${id}`)}>Editar</Button>
+              <AlertaEliminar id={id}/>
               <AlertaEliminar id={id}/>
             </Stack>
           </Td>

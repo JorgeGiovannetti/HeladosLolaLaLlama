@@ -15,6 +15,7 @@ const EditProduct = () => {
   const { product, isLoading } = useProduct(id);
   const history = useHistory();
 
+  console.log(product);
   if (!isLoading && !product) {
     history.push("/admin/products");
   }

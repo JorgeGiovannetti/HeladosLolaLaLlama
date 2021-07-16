@@ -15,6 +15,10 @@ struct ProductController: RouteCollection {
         productsRoute.get(":productID", use: getHandler)
         productsRoute.get("available", use: getAllAvailableHandler)
         productsRoute.get("availableHelados", use: getAllAvailableHeladosHandler)
+        let tokenAuthMiddleware = Token.authenticator()
+        let guardAuthMiddleware = Administrator.guardMiddleware()
+        let tokenAuthGroup = heladosRoute.grouped(tokenAuthMiddleware, guardAuthMiddleware)
+        tokenAuthGroup.post("changeAvailable",":productID", use: changeAvailable)
     }
     
     func getAllHandler(_ req: Request) throws -> EventLoopFuture<[Product]> {
@@ -31,6 +35,13 @@ struct ProductController: RouteCollection {
     
     func getAllAvailableHeladosHandler(_ req: Request) throws -> EventLoopFuture<[Product]> {
         Product.query(on: req.db).with(\.$helado).with(\.$fotos).with(\.$precios).filter(\.$available == true).all()
+    }
+    
+    func changeAvailable(_ req: Request) throws -> EventLoopFuture<HTTPStatus> {
+        Product.find(req.parameters.get("productID"), on: req.db).unwrap(or: Abort(.notFound)).flatMap { product in
+            product.available = !product.available
+            return product.save(on: req.db).transform(to: .ok)
+        }
     }
     
     
