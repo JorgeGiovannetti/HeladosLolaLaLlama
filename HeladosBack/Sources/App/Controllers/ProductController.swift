@@ -17,7 +17,7 @@ struct ProductController: RouteCollection {
         productsRoute.get("availableHelados", use: getAllAvailableHeladosHandler)
         let tokenAuthMiddleware = Token.authenticator()
         let guardAuthMiddleware = Administrator.guardMiddleware()
-        let tokenAuthGroup = heladosRoute.grouped(tokenAuthMiddleware, guardAuthMiddleware)
+        let tokenAuthGroup = productsRoute.grouped(tokenAuthMiddleware, guardAuthMiddleware)
         tokenAuthGroup.post("changeAvailable",":productID", use: changeAvailable)
     }
     

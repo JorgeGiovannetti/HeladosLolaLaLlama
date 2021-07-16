@@ -73,6 +73,52 @@ const AlertaEliminar = ({ id }) => {
   );
 };
 
+const AlertaDeshabilitar = ({ id }) => {
+  const [isOpen, setIsOpen] = React.useState(false);
+  const onClose = () => setIsOpen(false);
+  const cancelRef = React.useRef();
+
+  const deshabilitarProducto = () => {   
+    axiosClient.post(`product/changeAvailable/${id}`);
+    onClose();
+  }
+
+  return (
+    <>
+      <Button colorScheme="blue" onClick={() => setIsOpen(true)}>
+        Cambiar estado
+      </Button>
+
+      <AlertDialog
+        isOpen={isOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={onClose}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              Delete Customer
+            </AlertDialogHeader>
+
+            <AlertDialogBody>
+            ¿Desea cambiar el estado de disponibilidad del producto seleccionado? <br/>
+            </AlertDialogBody>
+
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={onClose}>
+                Cancelar
+              </Button>
+              <Button colorScheme="blue" onClick={deshabilitarProducto} ml={3}>
+                Cambiar estado
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
+    </>
+  );
+};
+
 const ProductsAdmin = () => {
   const { products, isLoading, error } = useProducts();
   const history = useHistory();
@@ -144,7 +190,7 @@ const ProductsAdmin = () => {
             <Stack direction={["column", "row", "row", "row"]}>
               <Button colorScheme="blue" onClick={() => history.push(`/admin/products/${id}`)}>Editar</Button>
               <AlertaEliminar id={id}/>
-              <AlertaEliminar id={id}/>
+              <AlertaDeshabilitar id={id}/>
             </Stack>
           </Td>
         </Tr>
